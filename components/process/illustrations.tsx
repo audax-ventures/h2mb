@@ -23,7 +23,7 @@ export function Purification() { return <Base name="Raw water passes through fil
   <defs><linearGradient id="purifying-water"><stop stopColor="#759ca7" /><stop offset=".45" stopColor="#92bfd2" /><stop offset="1" stopColor="#4dc7f1" /></linearGradient></defs>
   <Pipe d="M35 270H565" color="url(#purifying-water)" dashed />
   {[{x:90,name:'FILTER',c:'#8ba8a8'},{x:250,name:'RO MEMBRANE',c:'#83bdce'},{x:410,name:'DEIONIZATION',c:'#5fcff4'}].map(({x,name,c},i)=><g key={name}>
-    <rect x={x} y="145" width="105" height="225" rx="25" fill="#f4f7ed" stroke={ink} strokeWidth="3" /><rect x={x+13} y="165" width="79" height="183" rx="16" fill={c} fillOpacity=".65" />
+    <rect x={x} y="145" width="105" height="225" rx="25" fill="#f4f7ed" stroke={ink} strokeWidth="3" /><rect className={`purifying-column-${i}`} x={x+13} y="165" width="79" height="183" rx="16" fill={c} fillOpacity=".65" />
     {Array.from({length:6},(_,j)=><path key={j} d={`M${x+20} ${185+j*25}H${x+85}`} stroke={i===0?'#607875':'#e9f7f7'} strokeWidth={i===0?6:3} />)}
     <rect x={x+22} y="132" width="61" height="22" rx="5" fill="#426661" /><Label x={x+52} y={403}>{name}</Label>
   </g>)}

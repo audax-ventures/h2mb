@@ -14,6 +14,9 @@ export function ProcessJourney() {
   const route = useRef<SVGPathElement>(null);
   const routeBase = useRef<SVGPathElement>(null);
   const routeSvg = useRef<SVGSVGElement>(null);
+  const oxygenRoute = useRef<SVGPathElement>(null);
+  const oxygenBase = useRef<SVGPathElement>(null);
+  const oxygenParticle = useRef<SVGCircleElement>(null);
   const [active, setActive] = useState(0);
   const [simple, setSimple] = useState(false);
   const [systemReduced, setSystemReduced] = useState(false);
@@ -32,7 +35,17 @@ export function ProcessJourney() {
     if (!host || !content || !path || !routeBase.current || !routeSvg.current) return;
     const stages = Array.from(content.querySelectorAll<HTMLElement>('.journey-stage'));
     const particles = Array.from(content.querySelectorAll<SVGCircleElement>('.flow-particle'));
-    let frame = 0, pathLength = 0, lastActive = -1;
+    let frame = 0, pathLength = 0, oxygenLength = 0, lastActive = -1;
+    let routeSamples: number[] = [], oxygenSamples: number[] = [];
+
+    // Map the viewport's vertical position to distance along each curved pipe.
+    const sample = (element: SVGPathElement, length: number) => Array.from({ length: 161 }, (_, index) => element.getPointAtLength(length * index / 160).y);
+    const progressAt = (samples: number[], y: number) => {
+      const index = samples.findIndex(value => value >= y);
+      if (index < 0) return 1;
+      if (index === 0) return 0;
+      return (index - 1 + clamp((y - samples[index - 1]) / Math.max(1, samples[index] - samples[index - 1]))) / (samples.length - 1);
+    };
 
     const measure = () => {
       const bounds = content.getBoundingClientRect();
@@ -40,10 +53,12 @@ export function ProcessJourney() {
         const rect = stage.querySelector('.process-visual')!.getBoundingClientRect();
         return { x: rect.left - bounds.left + rect.width / 2, top: rect.top - bounds.top + rect.height * .08, bottom: rect.bottom - bounds.top - rect.height * .08 };
       });
-      let d = `M ${points[0].x} ${points[0].top - 65}`;
-      points.forEach((point, index) => {
+      // Oxygen is a side stream; the hydrogen route bypasses its recovery scene.
+      const hydrogenPoints = points.filter((_, index) => index !== 4);
+      let d = `M ${hydrogenPoints[0].x} ${hydrogenPoints[0].top - 65}`;
+      hydrogenPoints.forEach((point, index) => {
         if (index) {
-          const prior = points[index - 1];
+          const prior = hydrogenPoints[index - 1];
           const mid = (prior.bottom + point.top) / 2;
           d += ` C ${prior.x} ${mid}, ${point.x} ${mid}, ${point.x} ${point.top}`;
         }
@@ -55,6 +70,17 @@ export function ProcessJourney() {
       path.setAttribute('d', d);
       routeBase.current!.setAttribute('d', d);
       pathLength = path.getTotalLength();
+      routeSamples = sample(path, pathLength);
+      const split = stages[3].querySelector('.process-diagram')!.getBoundingClientRect();
+      const collection = stages[4].querySelector('.process-diagram')!.getBoundingClientRect();
+      const start = { x: split.left - bounds.left + split.width * 580 / 600, y: split.top - bounds.top + split.height * 430 / 500 };
+      const end = { x: collection.left - bounds.left + collection.width * 560 / 600, y: collection.top - bounds.top + collection.height * 100 / 500 };
+      const mid = (start.y + end.y) / 2;
+      const oxygenD = `M ${start.x} ${start.y} C ${start.x} ${mid}, ${end.x} ${mid}, ${end.x} ${end.y}`;
+      oxygenRoute.current!.setAttribute('d', oxygenD);
+      oxygenBase.current!.setAttribute('d', oxygenD);
+      oxygenLength = oxygenRoute.current!.getTotalLength();
+      oxygenSamples = sample(oxygenRoute.current!, oxygenLength);
       update();
     };
 
@@ -63,6 +89,8 @@ export function ProcessJourney() {
       const bounds = content.getBoundingClientRect();
       const viewport = window.innerHeight;
       const totalProgress = clamp((viewport * .58 - bounds.top) / bounds.height);
+      const focusY = viewport * .58 - bounds.top;
+      const pipeProgress = progressAt(routeSamples, focusY);
       host.style.setProperty('--journey-progress', String(totalProgress));
       host.style.setProperty('--world-shift', String(clamp((totalProgress - .19) / .22)));
       let nearest = 0, distance = Infinity;
@@ -74,9 +102,15 @@ export function ProcessJourney() {
         if (difference < distance) { distance = difference; nearest = index; }
       });
       if (nearest !== lastActive) { lastActive = nearest; setActive(nearest); }
-      path.style.strokeDashoffset = String(reduced ? 0 : 1 - totalProgress);
+      path.style.strokeDashoffset = String(reduced ? 0 : 1 - pipeProgress);
+      const oxygenProgress = progressAt(oxygenSamples, focusY);
+      oxygenRoute.current!.style.strokeDashoffset = String(reduced ? 0 : 1 - oxygenProgress);
+      const oxygenPoint = oxygenRoute.current!.getPointAtLength(oxygenLength * oxygenProgress);
+      oxygenParticle.current!.setAttribute('cx', String(oxygenPoint.x));
+      oxygenParticle.current!.setAttribute('cy', String(oxygenPoint.y));
+      oxygenParticle.current!.style.opacity = reduced || oxygenProgress <= 0 || oxygenProgress >= 1 ? '0' : '1';
       particles.forEach((particle, index) => {
-        const progress = totalProgress - index * .005;
+        const progress = pipeProgress - index * .005;
         if (reduced || progress < 0 || !pathLength) { particle.style.opacity = '0'; return; }
         const point = path.getPointAtLength(pathLength * clamp(progress));
         particle.setAttribute('cx', String(point.x));
@@ -112,6 +146,7 @@ export function ProcessJourney() {
       <svg ref={routeSvg} className="process-flow-route" aria-hidden="true" preserveAspectRatio="none">
         <defs><linearGradient id="journey-pipe-colour" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#769aa3" /><stop offset=".19" stopColor="#65c9e8" /><stop offset=".37" stopColor="#65c9e8" /><stop offset=".43" stopColor="#b5d975" /><stop offset="1" stopColor="#b5d975" /></linearGradient></defs>
         <path ref={routeBase} className="flow-route-base" /><path ref={route} className="flow-route-fill" pathLength="1" />
+        <path ref={oxygenBase} className="flow-route-base oxygen-route-base" /><path ref={oxygenRoute} className="flow-route-fill oxygen-route-fill" pathLength="1" /><circle ref={oxygenParticle} className="oxygen-flow-particle" r="8" />
         {Array.from({length:6},(_,i)=><circle className="flow-particle" r={i===0?10:5} key={i} />)}
       </svg>
       {processSteps.map((step, index) => {
