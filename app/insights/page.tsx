@@ -1,6 +1,15 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { Arrow, CTA, PageIntro } from '@/components/site';
+import { CTA, PageIntro } from '@/components/site';
+import { ResourceLibrary } from '@/components/resource-library';
 import { articles } from '@/lib/content';
-export const metadata: Metadata = { title: 'Insights & Media' };
-export default function Insights() { return <><PageIntro label="Insights & media" title="Understanding what comes next." text="Explore the fundamentals, the Manitoba opportunity, and the conversations shaping a hydrogen economy." /><section className="container section"><div className="insight-preview">{articles.map(a=><Link key={a.slug} href={`/insights/${a.slug}`}><span className="eyebrow">{a.category} · {a.reading}</span><h2>{a.title}</h2><p>{a.summary}</p><span className="text-link">Read the story <Arrow /></span></Link>)}</div></section><section className="soft-section"><div className="container section"><span className="eyebrow">In the media</span><h2>Part of the conversation.</h2><p className="media-note">Historical coverage of H2MB and Manitoba’s emerging hydrogen sector. Project plans and timelines discussed in these articles may have changed.</p><a className="media-row" href="https://manitoba-inc.ca/hydrogen-is-da-bomb-for-green-energy-in-manitoba/" target="_blank" rel="noreferrer"><span>Manitoba Inc.</span><h3>Hydrogen is “da bomb” for green energy in Manitoba</h3><Arrow /></a><a className="media-row" href="https://www.winnipegfreepress.com/business/2023/02/09/hydrogen-race-underway-in-province" target="_blank" rel="noreferrer"><span>Winnipeg Free Press<br /><small>February 9, 2023</small></span><h3>Hydrogen race underway in province</h3><Arrow /></a></div></section><CTA title="Have a question about H2MB? Let’s connect." /></>; }
+export const metadata: Metadata = { title: 'Insights & Media', description: 'Explore green hydrogen fundamentals, Manitoba’s opportunity, and historical media coverage of H2MB.' };
+
+const resources = [
+  ...articles.map(article => ({ title: article.title, summary: article.summary, href: `/insights/${article.slug}`, category: article.category, label: article.reading })),
+  { title: 'Hydrogen is “da bomb” for green energy in Manitoba', summary: 'Manitoba Inc. explores the emerging hydrogen sector and H2MB’s early vision for local production.', href: 'https://manitoba-inc.ca/hydrogen-is-da-bomb-for-green-energy-in-manitoba/', category: 'Media coverage', label: 'Manitoba Inc. · Historical coverage', external: true },
+  { title: 'Hydrogen race underway in province', summary: 'A look at Manitoba’s early hydrogen production plans and the effort to build a local supply chain.', href: 'https://www.winnipegfreepress.com/business/2023/02/09/hydrogen-race-underway-in-province', category: 'Media coverage', label: 'Winnipeg Free Press · February 9, 2023 · May require subscription', external: true },
+];
+
+export default function Insights() {
+  return <><PageIntro label="Insights & media" title="Understanding what comes next." text="Explore the fundamentals, the Manitoba opportunity, and the conversations shaping a hydrogen economy." /><ResourceLibrary resources={resources} /><CTA title="Have a question about H2MB? Let’s connect." /></>;
+}
