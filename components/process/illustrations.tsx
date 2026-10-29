@@ -20,7 +20,7 @@ export function Lake() { return <Base name="Illustrated forest lake with an inta
   <Label x={300} y={175}>A SUITABLE WATER SOURCE</Label><Label x={470} y={463}>TO TREATMENT →</Label>
 </Base>; }
 export function Purification() { return <Base name="Raw water passes through filtration, reverse osmosis and deionization, changing to clear blue">
-  <defs><linearGradient id="purifying-water"><stop stopColor="#759ca7" /><stop offset=".45" stopColor="#92bfd2" /><stop offset="1" stopColor="#4dc7f1" /></linearGradient></defs>
+  <defs><linearGradient id="purifying-water" gradientUnits="userSpaceOnUse" x1="35" y1="270" x2="565" y2="270"><stop stopColor="#759ca7" /><stop offset=".45" stopColor="#92bfd2" /><stop offset="1" stopColor="#4dc7f1" /></linearGradient></defs>
   <Pipe d="M35 270H565" color="url(#purifying-water)" dashed />
   {[{x:90,name:'FILTER',c:'#8ba8a8'},{x:250,name:'RO MEMBRANE',c:'#83bdce'},{x:410,name:'DEIONIZATION',c:'#5fcff4'}].map(({x,name,c},i)=><g key={name}>
     <rect x={x} y="145" width="105" height="225" rx="25" fill="#f4f7ed" stroke={ink} strokeWidth="3" /><rect className={`purifying-column-${i}`} x={x+13} y="165" width="79" height="183" rx="16" fill={c} fillOpacity=".65" />

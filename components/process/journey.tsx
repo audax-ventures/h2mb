@@ -96,7 +96,8 @@ export function ProcessJourney() {
       let nearest = 0, distance = Infinity;
       stages.forEach((stage, index) => {
         const rect = stage.getBoundingClientRect();
-        const value = clamp((viewport * .8 - rect.top) / (rect.height + viewport * .1));
+        const illustration = stage.querySelector('.process-diagram')!.getBoundingClientRect();
+        const value = clamp((viewport - illustration.top) / (viewport + illustration.height));
         stage.style.setProperty('--step-progress', String(reduced ? 1 : value));
         const difference = Math.abs(rect.top + rect.height * .45 - viewport * .5);
         if (difference < distance) { distance = difference; nearest = index; }
