@@ -20,3 +20,7 @@ Compressed WebP versions are used in the website. The orbital hydrogen and elect
 ## Supplied brand asset
 
 `public/images/h2mb-logo.avif` is the logo supplied by the user on October 28, 2026 (original filename: H2MB Logo.avif). The header and footer use this file without recolouring or distortion. The footer provides a light backing to preserve contrast. The earlier downloaded logo is retained only as a reference asset.
+
+## Our Process educational walkthrough
+
+Added an original SVG/CSS scroll journey covering water intake, purification, renewable electricity, simplified PEM electrolysis, optional oxygen recovery, hydrogen conditioning, compressed storage, alternative delivery paths, and fuel-cell/industrial uses. Sources are linked within the page. Illustrations are conceptual, and gas colours and water clarity changes are explanatory, not literal. No illustrated facility specifications are attributed to H2MB.

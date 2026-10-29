@@ -6,6 +6,8 @@
 
 .brand img{width:175px;height:auto;display:block}.footer .brand{background:var(--paper);padding:12px;border-radius:3px;align-self:flex-start}.footer .brand img{width:175px}@media(max-width:760px){.brand img{width:146px}.footer .brand img{width:155px}}
 
+@media(min-width:761px) and (max-width:1000px){.menu-toggle{display:block;background:none;border:1px solid var(--line);border-radius:3px;padding:8px 14px;font-size:13px;color:var(--ink)}.nav{display:none;position:absolute;left:0;right:0;top:94px;background:var(--paper);padding:22px 24px 30px;border-bottom:1px solid var(--line);box-shadow:0 15px 20px #173c3210}.nav.open{display:flex;flex-direction:column;align-items:stretch;gap:0}.nav>a:not(.button){font-size:20px;padding:14px 0;border-bottom:1px solid var(--line)}.nav>a[aria-current=page]:not(.button):after{display:none}.nav .button{margin-top:20px}}
+
 /* Shared branding and comfortable interactive targets. */
 :root{--brand-blue:#143c88;--brand-green:#629c49;--font-body:Arial,Helvetica,sans-serif;--font-title:Arial,Helvetica,sans-serif}
 .header{border-bottom:2px solid #143c8815}.nav>a[aria-current=page]:not(.button):after{background:var(--brand-blue)}.page-intro .eyebrow,.faq-section .eyebrow,.resource-card>.eyebrow{color:var(--brand-blue)}.page-intro{position:relative;overflow:hidden}.page-intro:after{content:'';position:absolute;width:300px;height:300px;right:-160px;top:70px;border:1px solid #143c8825;border-radius:50%;box-shadow:0 0 0 42px #143c8807,0 0 0 84px #143c8805;pointer-events:none}.page-intro .container{position:relative;z-index:1}.button:focus-visible,.menu-toggle:focus-visible{outline-offset:4px}.text-link{min-height:44px}.contact-form input,.contact-form select,.contact-form textarea{font-size:16px}.footer-top .brand{max-width:100%}
