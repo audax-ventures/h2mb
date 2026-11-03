@@ -17,6 +17,7 @@ export function ProcessJourney() {
   const oxygenRoute = useRef<SVGPathElement>(null);
   const oxygenBase = useRef<SVGPathElement>(null);
   const oxygenParticle = useRef<SVGCircleElement>(null);
+  const chapterMenu = useRef<HTMLDetailsElement>(null);
   const [active, setActive] = useState(0);
   const [simple, setSimple] = useState(false);
   const [systemReduced, setSystemReduced] = useState(false);
@@ -71,10 +72,14 @@ export function ProcessJourney() {
       routeBase.current!.setAttribute('d', d);
       pathLength = path.getTotalLength();
       routeSamples = sample(path, pathLength);
-      const split = stages[3].querySelector('.process-diagram')!.getBoundingClientRect();
-      const collection = stages[4].querySelector('.process-diagram')!.getBoundingClientRect();
-      const start = { x: split.left - bounds.left + split.width * 580 / 600, y: split.top - bounds.top + split.height * 430 / 500 };
-      const end = { x: collection.left - bounds.left + collection.width * 560 / 600, y: collection.top - bounds.top + collection.height * 100 / 500 };
+      const port = (index: number, x: number, y: number) => {
+        const svg = stages[index].querySelector<SVGSVGElement>('.process-diagram')!;
+        const rect = svg.getBoundingClientRect();
+        const view = svg.viewBox.baseVal;
+        return { x: rect.left - bounds.left + (x - view.x) / view.width * rect.width, y: rect.top - bounds.top + (y - view.y) / view.height * rect.height };
+      };
+      const start = port(3, 580, 430);
+      const end = port(4, 560, 100);
       const mid = (start.y + end.y) / 2;
       const oxygenD = `M ${start.x} ${start.y} C ${start.x} ${mid}, ${end.x} ${mid}, ${end.x} ${end.y}`;
       oxygenRoute.current!.setAttribute('d', oxygenD);
@@ -132,16 +137,29 @@ export function ProcessJourney() {
   return <div className={`process-experience${reduced ? ' simple-process' : ''}`} ref={root}>
     <div className="process-world"><Landscape /></div>
     <section className="process-opening container">
-      <div className="process-kicker"><span className="tiny-dot" />OUR PROCESS · AN ILLUSTRATED JOURNEY</div>
-      <h1>From a drop of water.<br /><em>To a world of possibility.</em></h1>
-      <p>Follow the flow. Discover how water and renewable electricity become green hydrogen—and where that journey can lead.</p>
-      <div className="process-opening-bottom"><a href="#water-supply" className="process-begin">Scroll to follow the story <span aria-hidden="true">↓</span></a><div className="process-legend" aria-label="Colour key"><span><i className="water-key" />Water</span><span><i className="hydrogen-key" />Hydrogen</span><span><i className="oxygen-key" />Oxygen</span></div></div>
-      <p className="process-intro-note">An educational walkthrough. The scenes illustrate a typical pathway, not a finalized H2MB facility design.</p>
+      <div className="process-kicker">OUR PROCESS · AN EDUCATIONAL JOURNEY</div>
+      <h1>From water.<br /><em>To possibility.</em></h1>
+      <p>Watch water become green hydrogen.</p>
+      <a href="#water-supply" className="process-begin">Follow the flow <span aria-hidden="true">↓</span></a>
     </section>
     <div className="process-toolbar">
-      <nav aria-label="Process chapters" className="process-chapters">{processSteps.map((step, index) => <a key={step.id} href={`#${step.id}`} aria-current={active === index ? 'step' : undefined} aria-label={`Step ${index+1}: ${step.label}`}><span>{String(index+1).padStart(2,'0')}</span><b>{step.short}</b></a>)}</nav>
-      <button type="button" className="process-motion-toggle" aria-pressed={reduced} disabled={systemReduced} onClick={() => setSimple(value => !value)}>{systemReduced ? 'Reduced motion on' : simple ? 'Animation off' : 'Animation on'}</button>
-      <div className="process-progress" aria-hidden="true" />
+      <details ref={chapterMenu} className="process-step-menu" onKeyDown={event => {
+        if (event.key === 'Escape' && chapterMenu.current?.open) {
+          chapterMenu.current.open = false;
+          chapterMenu.current.querySelector('summary')?.focus();
+        }
+      }} onBlur={event => {
+        if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false;
+      }}>
+        <summary><span>{String(active + 1).padStart(2,'0')} / 09</span>Steps <span aria-hidden="true">⌄</span></summary>
+        <nav aria-label="Process chapters" className="process-chapters">{processSteps.map((step, index) => <a key={step.id} href={`#${step.id}`} aria-current={active === index ? 'step' : undefined} aria-label={`Step ${index+1}: ${step.label}`} onClick={() => {
+          if (chapterMenu.current) {
+            chapterMenu.current.open = false;
+            chapterMenu.current.querySelector('summary')?.focus();
+          }
+        }}><span>{String(index+1).padStart(2,'0')}</span>{step.label}</a>)}</nav>
+      </details>
+      <button type="button" className="process-motion-toggle" aria-label="Reduce motion" aria-pressed={reduced} disabled={systemReduced} onClick={() => setSimple(value => !value)}><span aria-hidden="true">{reduced ? '▷' : 'Ⅱ'}</span>{reduced ? 'Motion off' : 'Motion on'}</button>
     </div>
     <div className="process-track" ref={track}>
       <svg ref={routeSvg} className="process-flow-route" aria-hidden="true" preserveAspectRatio="none">
@@ -152,16 +170,15 @@ export function ProcessJourney() {
       </svg>
       {processSteps.map((step, index) => {
         const Scene = sceneIllustrations[index];
-        return <section className={`journey-stage stage-${index} ${index % 2 ? 'stage-reverse' : ''}`} key={step.id} id={step.id} aria-labelledby={`${step.id}-title`}>
+        return <section className={`journey-stage stage-${index} ${index % 2 ? 'stage-reverse' : ''} ${active === index ? 'is-active' : ''}`} key={step.id} id={step.id} aria-labelledby={`${step.id}-title`}>
           <div className="stage-inner container">
-            <div className="stage-copy"><div className="stage-label"><span>{String(index+1).padStart(2,'0')}</span>{step.label}</div><h2 id={`${step.id}-title`}>{step.title}</h2><p>{step.description}</p><div className="stage-insight"><span aria-hidden="true">↳</span><p>{step.detail}</p></div><p className="stage-note">{step.note}</p></div>
-            <div className="process-visual"><div className="diagram-header"><span className="diagram-tag">{step.signal}</span><span>THE JOURNEY / {String(index+1).padStart(2,'0')}</span></div><Scene /><div className="diagram-caption"><span className={`stream-dot stream-${index}`} />{step.caption}</div></div>
+            <div className="stage-copy"><div className="stage-label"><span>{String(index+1).padStart(2,'0')}</span>{step.label}</div><h2 id={`${step.id}-title`}>{step.title}</h2><p>{step.description}</p></div>
+            <div className="process-visual"><Scene /></div>
           </div>
-          {index < processSteps.length - 1 && <a href={`#${processSteps[index+1].id}`} className="stage-next" aria-label={`Continue to ${processSteps[index+1].label}`}><span aria-hidden="true">↓</span></a>}
         </section>;
       })}
     </div>
-    <section className="process-ending container"><span className="eyebrow">Small molecule. Real possibilities.</span><h2>Now, imagine<br /><em>where it could take you.</em></h2><p>The right application starts with a conversation. Explore the possibilities or talk to H2MB about your operation.</p><div className="process-end-actions"><Link href="/applications" className="button">Explore applications ↗</Link><Link href="/contact" className="text-link">Let’s talk <span aria-hidden="true">↗</span></Link></div><a href="#water-supply" className="process-replay">↥ Follow the journey again</a></section>
-    <aside className="process-sources container"><details><summary>About this walkthrough & sources</summary><p>Illustrations simplify equipment, flows, and scale. Gas colours and water clarity changes are visual storytelling devices. Actual water treatment, gas quality, storage, and delivery are designed around the equipment and application. Recovering oxygen requires suitable processing and demand.</p><ul><li><a href="https://www.energy.gov/cmei/fuels/hydrogen-production-electrolysis" target="_blank" rel="noreferrer">U.S. Department of Energy — electrolysis ↗</a></li><li><a href="https://nelhydrogen.com/faq/" target="_blank" rel="noreferrer">Nel Hydrogen — water quality requirements ↗</a></li><li><a href="https://encyclopedia.airliquide.com/oxygen" target="_blank" rel="noreferrer">Air Liquide — oxygen applications ↗</a></li><li><a href="https://www.energy.gov/cmei/fuels/hydrogen-delivery" target="_blank" rel="noreferrer">U.S. Department of Energy — hydrogen delivery ↗</a></li><li><a href="https://www.energy.gov/cmei/fuels/hydrogen-storage" target="_blank" rel="noreferrer">U.S. Department of Energy — hydrogen storage ↗</a></li><li><a href="https://www.iea.org/reports/global-hydrogen-review-2024/ghg-emissions-of-hydrogen-and-its-derivatives" target="_blank" rel="noreferrer">IEA — lifecycle emissions ↗</a></li></ul></details></aside>
+    <section className="process-ending container"><h2>Made for the <em>real world.</em></h2><Link href="/applications" className="button">Explore applications <span aria-hidden="true">↗</span></Link></section>
+    <aside className="process-sources container"><details><summary>About this journey & sources</summary><p>This educational journey illustrates a typical pathway, not a finalized H2MB facility. Equipment, flows, and scale are simplified; the electrolyzer is a PEM example. Water clarity and gas colours help distinguish the streams. Actual treatment, gas quality, storage, and delivery depend on the application. Oxygen recovery requires suitable processing and demand. Renewable electricity lowers production emissions, while equipment and delivery still have lifecycle impacts.</p><ul><li><a href="https://www.energy.gov/cmei/fuels/hydrogen-production-electrolysis" target="_blank" rel="noreferrer">U.S. Department of Energy — electrolysis ↗</a></li><li><a href="https://nelhydrogen.com/faq/" target="_blank" rel="noreferrer">Nel Hydrogen — water quality requirements ↗</a></li><li><a href="https://encyclopedia.airliquide.com/oxygen" target="_blank" rel="noreferrer">Air Liquide — oxygen applications ↗</a></li><li><a href="https://www.energy.gov/cmei/fuels/hydrogen-delivery" target="_blank" rel="noreferrer">U.S. Department of Energy — hydrogen delivery ↗</a></li><li><a href="https://www.energy.gov/cmei/fuels/hydrogen-storage" target="_blank" rel="noreferrer">U.S. Department of Energy — hydrogen storage ↗</a></li><li><a href="https://www.iea.org/reports/global-hydrogen-review-2024/ghg-emissions-of-hydrogen-and-its-derivatives" target="_blank" rel="noreferrer">IEA — lifecycle emissions ↗</a></li></ul></details></aside>
   </div>;
 }
