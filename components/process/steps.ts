@@ -8,7 +8,7 @@ export const processSteps = [
   },
   {
     id: 'purification', label: 'Water purification',
-    description: 'Filters, reverse osmosis, and deionization remove impurities and minerals, protecting the electrolyzer.',
+    description: 'The same water flows through filters, reverse osmosis, and deionization to remove impurities and protect the electrolyzer.',
     detailLabel: 'Why purity matters',
     detail: 'Dissolved minerals can cause scaling or damage. Water must meet the electrolyzer’s quality requirements.',
     result: 'High-purity water',
