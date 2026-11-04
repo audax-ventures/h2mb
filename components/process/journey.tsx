@@ -139,7 +139,7 @@ export function ProcessJourney() {
     <section className="process-opening container">
       <div className="process-kicker">OUR PROCESS · AN EDUCATIONAL JOURNEY</div>
       <h1>From water.<br /><em>To possibility.</em></h1>
-      <p>Watch water become green hydrogen.</p>
+      <p>Follow nine steps from water to green hydrogen.</p>
       <a href="#water-supply" className="process-begin">Follow the flow <span aria-hidden="true">↓</span></a>
     </section>
     <div className="process-toolbar">
@@ -170,11 +170,23 @@ export function ProcessJourney() {
       </svg>
       {processSteps.map((step, index) => {
         const Scene = sceneIllustrations[index];
+        const next = processSteps[index + 1];
         return <section className={`journey-stage stage-${index} ${index % 2 ? 'stage-reverse' : ''} ${active === index ? 'is-active' : ''}`} key={step.id} id={step.id} aria-labelledby={`${step.id}-title`}>
+          <header className="stage-heading container">
+            <div className="stage-number" aria-hidden="true"><span>STEP</span>{String(index + 1).padStart(2, '0')}</div>
+            <h2 id={`${step.id}-title`}><span className="process-sr-only">Step {index + 1}: </span>{step.label}</h2>
+          </header>
           <div className="stage-inner container">
-            <div className="stage-copy"><div className="stage-label"><span>{String(index+1).padStart(2,'0')}</span>{step.label}</div><h2 id={`${step.id}-title`}>{step.title}</h2><p>{step.description}</p></div>
+            <div className="stage-copy">
+              <p className="stage-summary">{step.description}</p>
+              <dl className="stage-detail"><div><dt>{step.detailLabel}</dt><dd>{step.detail}</dd></div></dl>
+            </div>
             <div className="process-visual"><Scene /></div>
           </div>
+          <footer className="stage-footer container">
+            <p><span>RESULT</span>{step.result}</p>
+            {next && <a href={`#${next.id}`} aria-label={`Continue to step ${index + 2}: ${next.label}`}><span>Next: {next.label}</span><span aria-hidden="true">↓</span></a>}
+          </footer>
         </section>;
       })}
     </div>
