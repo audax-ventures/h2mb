@@ -7,7 +7,7 @@ html:has(.simple-process) { scroll-behavior: auto; }
   position: relative;
   isolation: isolate;
   overflow: clip;
-  background: #e6ecdc;
+  background: #f8faf5;
   color: #244b49;
 }
 .process-world {
@@ -16,6 +16,7 @@ html:has(.simple-process) { scroll-behavior: auto; }
   height: calc(100svh - 94px);
   margin-bottom: calc(-100svh + 94px);
   z-index: -1;
+  opacity: .3;
   pointer-events: none;
   overflow: hidden;
 }
@@ -81,22 +82,22 @@ html:has(.simple-process) { scroll-behavior: auto; }
 .process-flow-route { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
 .flow-route-base { fill: none; stroke: #5279651c; stroke-width: 20; stroke-linecap: round; }
 .flow-route-fill { fill: none; stroke: url(#journey-pipe-colour); stroke-width: 11; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
-.flow-particle { fill: #44bee5; stroke: #f2f7e5; stroke-width: 2; opacity: 0; }
+.flow-particle { fill: #09ace4; stroke: #f2f7e5; stroke-width: 2; opacity: 0; }
 .oxygen-route-base { stroke: #b572571c; }
-.oxygen-route-fill { stroke: #e99070; stroke-width: 10; }
-.oxygen-flow-particle { fill: #e99070; stroke: #f2f7e5; stroke-width: 2; opacity: 0; }
+.oxygen-route-fill { stroke: #f47745; stroke-width: 10; }
+.oxygen-flow-particle { fill: #f47745; stroke: #f2f7e5; stroke-width: 2; opacity: 0; }
 .journey-stage { position: relative; z-index: 1; display: flex; align-items: center; min-height: max(680px,90svh); padding: 65px 0 70px; scroll-margin-top: 150px; }
 .stage-inner.container { width: min(1480px,calc(100% - 64px)); display: grid; grid-template-columns: minmax(240px,.75fr) minmax(0,2fr); gap: 22px; align-items: center; position: relative; }
 .stage-reverse .stage-inner { grid-template-columns: minmax(0,2fr) minmax(240px,.75fr); }
 .stage-reverse .stage-copy { grid-column: 2; grid-row: 1; }
 .stage-reverse .process-visual { grid-column: 1; grid-row: 1; }
-.stage-copy { position: relative; z-index: 2; padding: 26px; border-radius: 16px; background: #f8faf2f5; }
+.stage-copy { position: relative; z-index: 2; padding: 26px; border-radius: 16px; background: #fffffff5; }
 .stage-label { display: flex; align-items: center; gap: 10px; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: #55724f; margin-bottom: 19px; }
 .stage-label span { font-variant-numeric: tabular-nums; }
 .stage-copy h2 { font-size: clamp(30px,2.7vw,42px); line-height: 1.08; letter-spacing: -.045em; margin-bottom: 18px; text-wrap: balance; }
 .stage-copy p { font-size: 16px; line-height: 1.65; color: #456254; margin: 0; }
 .process-visual { min-width: 0; position: relative; }
-.process-diagram { width: 100%; height: auto; display: block; overflow: visible; filter: drop-shadow(0 18px 20px #244b4910); }
+.process-diagram { width: 100%; height: auto; display: block; overflow: visible; filter: drop-shadow(0 18px 20px #244b491c); }
 .diagram-label { font-family: Arial,Helvetica,sans-serif; font-size: 11px; letter-spacing: .025em; font-weight: 600; }
 
 /* Scroll changes the equipment; gentle flow continues only in the current scene. */
@@ -106,18 +107,18 @@ html:has(.simple-process) { scroll-behavior: auto; }
 .lake-ripples { transform: translateX(calc(var(--step-progress)*26px)); }
 .purification-impurities { opacity: calc(1 - var(--step-progress)*.98); transform: translateY(calc(var(--step-progress)*60px)); }
 .clean-water-bubbles { opacity: calc(.3 + var(--step-progress)*.7); transform: translateY(calc(var(--step-progress)*-35px)); }
-.purifying-column-1 { fill: color-mix(in srgb,#8ba8a8 calc(100% - var(--step-progress)*100%),#65c4da); }
-.purifying-column-2 { fill: color-mix(in srgb,#8ba8a8 calc(100% - var(--step-progress)*100%),#3bc8f4); }
+.purifying-column-1 { fill: color-mix(in srgb,#779ca6 calc(60% - var(--step-progress)*60%),#21aacd); }
+.purifying-column-2 { fill: color-mix(in srgb,#779ca6 calc(40% - var(--step-progress)*40%),#09b9ed); }
 .wind-rotor { transform: rotate(calc(var(--step-progress)*420deg)); }
-.reaction-hydrogen { opacity: calc(.2 + var(--step-progress)*.8); transform: translateY(calc(var(--step-progress)*-40px)); }
-.reaction-oxygen { opacity: calc(.2 + var(--step-progress)*.8); transform: translateY(calc(var(--step-progress)*-34px)); }
+.reaction-hydrogen { opacity: 1; transform: translateY(calc(var(--step-progress)*-40px)); }
+.reaction-oxygen { opacity: 1; transform: translateY(calc(var(--step-progress)*-34px)); }
 .ion-crossing { transform: translateX(calc((.5 - var(--step-progress))*60px)); }
 .moisture-drops { opacity: calc(1 - var(--step-progress)*.9); transform: translateY(calc(var(--step-progress)*60px)); }
 .compressor-rotor { transform-origin: 180px 250px; transform: rotate(calc(var(--step-progress)*540deg)); }
 .pressure-needle { transform: rotate(calc((var(--step-progress) - 1)*100deg)); }
 .delivery-truck { transform: translateX(calc((var(--step-progress) - .5)*55px)); }
 .delivery-truck.alternate { transform: translateX(calc((var(--step-progress) - .5)*-45px)); }
-.water-return { opacity: calc(.2 + var(--step-progress)*.8); transform: translateY(calc(var(--step-progress)*20px)); }
+.water-return { opacity: 1; transform: translateY(calc(var(--step-progress)*20px)); }
 .process-ending { position: relative; z-index: 1; padding-block: 65px 70px; text-align: center; }
 .process-ending h2 { font-size: clamp(38px,4.8vw,66px); margin-bottom: 28px; }
 .process-sources { position: relative; z-index: 1; padding-bottom: 25px; }

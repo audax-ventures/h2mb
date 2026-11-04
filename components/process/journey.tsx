@@ -122,7 +122,7 @@ export function ProcessJourney() {
         particle.setAttribute('cx', String(point.x));
         particle.setAttribute('cy', String(point.y));
         particle.style.opacity = String(1 - index * .13);
-        particle.style.fill = totalProgress < .15 ? '#91b8bd' : totalProgress < .39 ? '#68d2ef' : '#c5e77d';
+        particle.style.fill = totalProgress < .15 ? '#548b98' : totalProgress < .39 ? '#09ace4' : '#8bcc36';
       });
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
@@ -163,7 +163,7 @@ export function ProcessJourney() {
     </div>
     <div className="process-track" ref={track}>
       <svg ref={routeSvg} className="process-flow-route" aria-hidden="true" preserveAspectRatio="none">
-        <defs><linearGradient id="journey-pipe-colour" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#769aa3" /><stop offset=".19" stopColor="#65c9e8" /><stop offset=".37" stopColor="#65c9e8" /><stop offset=".43" stopColor="#b5d975" /><stop offset="1" stopColor="#b5d975" /></linearGradient></defs>
+        <defs><linearGradient id="journey-pipe-colour" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#548b98" /><stop offset=".19" stopColor="#09ace4" /><stop offset=".37" stopColor="#09ace4" /><stop offset=".43" stopColor="#8bcc36" /><stop offset="1" stopColor="#8bcc36" /></linearGradient></defs>
         <path ref={routeBase} className="flow-route-base" /><path ref={route} className="flow-route-fill" pathLength="1" />
         <path ref={oxygenBase} className="flow-route-base oxygen-route-base" /><path ref={oxygenRoute} className="flow-route-fill oxygen-route-fill" pathLength="1" /><circle ref={oxygenParticle} className="oxygen-flow-particle" r="8" />
         {Array.from({length:6},(_,i)=><circle className="flow-particle" r={i===0?10:5} key={i} />)}
