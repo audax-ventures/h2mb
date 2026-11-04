@@ -71,8 +71,8 @@ export function OxygenRecovery() { return <Base viewBox="0 80 600 440" name="Oxy
     <path d="M22 72V82L12 96V116Q12 121 18 121H42Q48 121 48 116V96L38 82V72Z" fill="#49bea9" stroke={ink} strokeWidth="2" /><path d="M19 103H41" stroke={ink} strokeWidth="2" /><Label x={115} y={108}>GLASS</Label>
     <path d="M9 149H51V158H37V180H51V189H9V180H23V158H9Z" fill="#4a7d99" stroke={ink} strokeWidth="2" /><Label x={115} y={175}>METALS</Label>
   </g>
-  <Pipe d="M600 425H35Q12 425 12 448Q12 470 35 470H600" color={hydrogen} dashed /><Label x={300} y={510}>HYDROGEN CONTINUES →</Label>
-  <FlowGuide d="M600 425H35Q12 425 12 448Q12 470 35 470H600" inlet="right" />
+  <Pipe d="M0 470H600" color={hydrogen} dashed /><Label x={300} y={510}>HYDROGEN CONTINUES →</Label>
+  <FlowGuide d="M0 470H600" />
 </Base>; }
 export function Conditioning() { return <Base viewBox="15 65 570 430" name="Hydrogen passes through a separator, purification stage, and dryers, with moisture removed and quality checked">
   <Pipe d="M15 270H565V450H15" color={hydrogen} dashed /><FlowGuide d="M15 270H565V450H15" outlet="left" />
