@@ -160,7 +160,7 @@ html:has(.simple-process) { scroll-behavior: auto; }
   .process-opening h1 { font-size: clamp(48px,10vw,65px); }
   .process-opening > p { font-size: 16px; max-width: 270px; }
   .process-kicker { font-size: 9px; letter-spacing: .09em; }
-  .process-toolbar { top: 87px; padding-inline: 12px; gap: 6px; }
+  .process-toolbar { top: 76px; height: 55px; padding: 7px 12px; align-items: center; gap: 6px; background: #f8faf5f5; border-bottom: 1px solid #c8d6c5; }
   .process-step-menu summary, .process-motion-toggle { min-height: 40px; padding: 9px 12px; font-size: 10px; }
   .process-chapters { width: 225px; right: -95px; top: 48px; }
   .journey-stage { width: calc(100% - 20px); padding: 22px 0 16px; margin-bottom: 24px; border-radius: 20px; scroll-margin-top: 140px; }
