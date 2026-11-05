@@ -3,6 +3,7 @@ body:has(.home-page) { background: #fff; }
 body:has(.home-page) .header { background: #fffffffa; border: 0; }
 body:has(.home-page) .nav .button { border-radius: 999px; }
 body:has(.home-page) .footer { background: #fff; color: #173c32; padding-top: 45px; }
+body:has(.home-page) .footer .brand { background: transparent; padding: 0; }
 body:has(.home-page) .footer p, body:has(.home-page) .footer-bottom, body:has(.home-page) .footer .eyebrow { color: #5c6b61; }
 body:has(.home-page) .footer-bottom { border: 0; padding-top: 18px; }
 .home-page { --home-green: #4b783b; background: #fff; color: #173c32; overflow: clip; }

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Landscape, sceneIllustrations } from './illustrations';
 import { processSteps } from './steps';
@@ -178,10 +179,15 @@ export function ProcessJourney() {
   return <div className={`process-experience${reduced ? ' simple-process' : ''}`} ref={root}>
     <div className="process-world"><Landscape /></div>
     <section className="process-opening container">
+      <div className="process-opening-copy">
       <div className="process-kicker">OUR PROCESS · AN EDUCATIONAL JOURNEY</div>
       <h1>From water.<br /><em>To possibility.</em></h1>
-      <p>One connected journey. Follow the water as it becomes green hydrogen.</p>
+      <p>Here’s a look at how we’re working to manufacture North America’s lowest-cost green hydrogen.</p>
       <a href="#water-supply" className="process-begin">Follow the flow <span aria-hidden="true">↓</span></a>
+      </div>
+      <figure className="process-opening-image">
+        <Image src="/images/hydrogen-applications.png" alt="Wooden blocks representing hydrogen storage, water, refuelling, energy and transport." width={1532} height={1026} sizes="(max-width: 760px) calc(100vw - 40px), 46vw" preload />
+      </figure>
     </section>
     <div className="process-toolbar">
       <details ref={chapterMenu} className="process-step-menu" onKeyDown={event => {
