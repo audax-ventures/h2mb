@@ -1,0 +1,138 @@
+/* The home page has its own open, white visual language. */
+body:has(.home-page) { background: #fff; }
+body:has(.home-page) .header { background: #fffffffa; border: 0; }
+body:has(.home-page) .nav .button { border-radius: 999px; }
+body:has(.home-page) .footer { background: #fff; color: #173c32; padding-top: 45px; }
+body:has(.home-page) .footer p, body:has(.home-page) .footer-bottom, body:has(.home-page) .footer .eyebrow { color: #5c6b61; }
+body:has(.home-page) .footer-bottom { border: 0; padding-top: 18px; }
+.home-page { --home-green: #4b783b; background: #fff; color: #173c32; overflow: clip; }
+.home-container { width: min(1280px,calc(100% - 112px)); margin-inline: auto; }
+.home-section { padding-block: 90px; }
+.home-page h1, .home-page h2, .home-page h3 { font-weight: 500; }
+.home-page h2 { font-size: clamp(36px,4.1vw,58px); line-height: 1.12; letter-spacing: -.055em; margin-bottom: 26px; }
+.home-page h3 { font-size: 24px; letter-spacing: -.035em; line-height: 1.2; }
+.home-page em { color: var(--home-green); }
+.home-page p { color: #53665c; line-height: 1.75; }
+.home-eyebrow { display: block; color: #536b5a; font-size: 10px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; line-height: 1.7; margin-bottom: 23px; }
+.home-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #629c49; margin-right: 10px; vertical-align: middle; }
+.home-button { display: inline-flex; align-items: center; justify-content: space-between; gap: 28px; min-height: 54px; padding: 14px 23px; background: #244d3e; color: #fff; border-radius: 999px; font-size: 13px; font-weight: 600; transition: background .2s,transform .2s; }
+.home-button > span { font-size: 24px; font-weight: 400; line-height: 1; }
+.home-button:hover { background: #3e6b4f; transform: translateY(-2px); }
+.home-link { display: inline-flex; align-items: center; gap: 16px; min-height: 44px; font-size: 13px; font-weight: 600; color: #244d3e; }
+.home-link > span { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #f0f5eb; font-size: 20px; font-weight: 400; transition: transform .2s,background .2s; }
+.home-link:hover > span, a:hover .home-link > span { transform: rotate(8deg); background: #e4efd8; }
+.home-hero { display: grid; grid-template-columns: minmax(0,.95fr) minmax(0,1.05fr); align-items: center; column-gap: 48px; padding-top: 70px; padding-bottom: 20px; }
+.home-hero h1 { font-size: clamp(52px,5.7vw,88px); line-height: 1.07; letter-spacing: -.06em; margin-bottom: 30px; }
+.home-hero-copy > p { max-width: 440px; font-size: 17px; margin-bottom: 27px; }
+.home-actions { display: flex; align-items: center; gap: 16px 24px; flex-wrap: wrap; }
+.home-hero-figure { position: relative; min-width: 0; margin: 0; padding-top: 8px; }
+.home-hero-figure::before { content: ''; position: absolute; inset: -18px -20px 18px 20px; background: #f0f5eb; border-radius: 45% 55% 35% 65% / 53% 45% 55% 47%; transform: rotate(-8deg); }
+.home-photo-shape { position: relative; overflow: hidden; border-radius: 43% 43% 9% 25% / 35% 35% 12% 24%; }
+.home-photo-shape img { display: block; width: 100%; height: auto; }
+.home-hero-figure figcaption { position: relative; text-align: center; font-size: 11px; color: #58705f; margin-top: 22px; letter-spacing: .02em; }
+.home-scroll { grid-column: 1 / -1; display: inline-flex; align-items: center; justify-self: start; gap: 12px; color: #627467; font-size: 10px; margin-top: 48px; min-height: 44px; }
+.home-scroll > span { width: 33px; height: 33px; display: inline-grid; place-items: center; border-radius: 50%; background: #f4f7ef; color: #4e7349; font-size: 19px; }
+.home-centered-copy { max-width: 730px; text-align: center; margin: 0 auto; }
+.home-centered-copy > p { max-width: 620px; margin-inline: auto; font-size: 17px; }
+.home-principles { display: grid; grid-template-columns: repeat(3,1fr); gap: 70px; max-width: 1050px; margin: 62px auto 0; }
+.home-step { display: inline-grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; color: #4d7542; background: #f0f5e9; font-size: 12px; }
+.home-principles article:nth-child(2) .home-step, .home-advantages article:nth-child(2) .home-step { color: #28528a; background: #edf3fa; }
+.home-principles h3 { font-size: 22px; margin: 21px 0 12px; }
+.home-principles p { font-size: 14px; max-width: 260px; margin: 0; }
+.home-project { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 95px; }
+.home-project-visual { text-align: center; }
+.home-molecule { display: block; width: 100%; max-width: 500px; margin: 0 auto 8px; }
+.home-project-copy > p { max-width: 450px; font-size: 16px; }
+.home-project-status { display: block; font-size: 12px; color: #5b6c5c; margin: 30px 0 16px; }
+.home-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 35px; margin-bottom: 45px; }
+.home-section-heading h2 { margin: 0; }
+.home-section-heading > .home-link { flex-shrink: 0; }
+.home-uses { display: grid; grid-template-columns: repeat(3,1fr); gap: 42px; }
+.home-use { display: block; }
+.home-use:nth-child(2) { padding-top: 42px; }
+.home-use-media { position: relative; aspect-ratio: 1.34; margin-bottom: 28px; overflow: hidden; }
+.home-use-media img { object-fit: cover; transition: transform .4s; }
+.home-use:hover .home-use-media img { transform: scale(1.035); }
+.home-use-transport { border-radius: 48% 48% 16% 35% / 54% 54% 18% 35%; }
+.home-use-industry { border-radius: 30% 48% 48% 18% / 32% 54% 48% 18%; }
+.home-use-power { border-radius: 50%; background: #f5f9fc; }
+.home-use-power svg { display: block; width: 100%; height: 100%; }
+.home-use > .home-eyebrow { margin-bottom: 12px; font-size: 9px; }
+.home-use h3 { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.home-use h3 > span { color: #678c52; font-size: 22px; }
+.home-use p { font-size: 14px; margin: 0; }
+.home-place { display: grid; grid-template-columns: 1fr 1fr; gap: 120px; align-items: center; }
+.home-place-copy > p { max-width: 400px; font-size: 16px; }
+.home-advantages { position: relative; display: flex; flex-direction: column; gap: 38px; }
+.home-advantages::before { content: ''; position: absolute; z-index: 0; width: 370px; height: 370px; top: 20px; left: 70px; background: #f9fbf6; border-radius: 50%; }
+.home-advantages article { position: relative; display: flex; align-items: flex-start; gap: 24px; }
+.home-advantages h3 { font-size: 22px; margin: 3px 0 10px; }
+.home-advantages p { font-size: 14px; margin: 0; max-width: 350px; }
+.home-stories { display: grid; grid-template-columns: 1fr 1fr; gap: 75px; margin-top: 55px; }
+.home-stories > a { display: flex; align-items: flex-start; gap: 24px; }
+.home-story-number { font-size: 65px; font-weight: 400; line-height: 1; letter-spacing: -.08em; color: #d5e5ca; }
+.home-stories > a:nth-child(2) .home-story-number { color: #d9e4f0; }
+.home-stories .home-eyebrow { font-size: 9px; margin-bottom: 16px; }
+.home-stories h3 { font-size: 29px; line-height: 1.22; max-width: 430px; margin-bottom: 22px; }
+.home-contact { position: relative; isolation: isolate; padding-block: 110px 120px; text-align: center; }
+.home-contact::before { content: ''; position: absolute; z-index: -1; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-12deg); width: min(570px,80%); height: 290px; border: 1px solid #e1ead9; border-radius: 50%; }
+.home-contact .home-eyebrow { margin-bottom: 24px; }
+.home-contact h2 { font-size: clamp(40px,4.7vw,66px); margin-bottom: 32px; }
+@media (max-width:1100px) {
+  .home-container { width: calc(100% - 72px); }
+  .home-section { padding-block: 70px; }
+  .home-hero { gap: 28px; padding-top: 50px; }
+  .home-hero h1 { font-size: 57px; }
+  .home-hero .home-eyebrow { max-width: 270px; }
+  .home-principles, .home-uses { gap: 30px; }
+  .home-project, .home-place { gap: 50px; }
+  .home-stories { gap: 40px; }
+  .home-story-number { font-size: 49px; }
+}
+@media (max-width:760px) {
+  .home-container { width: calc(100% - 48px); }
+  .home-section { padding-block: 55px; }
+  .home-page h2 { font-size: 36px; }
+  .home-hero { grid-template-columns: 1fr; padding-top: 34px; padding-bottom: 10px; gap: 35px; }
+  .home-hero h1 { font-size: clamp(44px,11.5vw,72px); margin-bottom: 23px; }
+  .home-hero .home-eyebrow { max-width: none; font-size: 9px; margin-bottom: 21px; }
+  .home-hero-copy > p { font-size: 16px; margin-bottom: 23px; }
+  .home-actions { gap: 12px 19px; }
+  .home-button { padding: 13px 21px; font-size: 12px; }
+  .home-link { font-size: 12px; }
+  .home-hero-figure { width: min(100%,580px); justify-self: center; padding: 0; }
+  .home-hero-figure::before { inset: -8px -8px 24px 12px; }
+  .home-hero-figure figcaption { margin-top: 18px; font-size: 10px; }
+  .home-scroll { margin-top: 0; }
+  .home-centered-copy > p { font-size: 16px; }
+  .home-principles { grid-template-columns: 1fr; margin-top: 38px; gap: 30px; }
+  .home-principles article { display: grid; grid-template-columns: 44px 1fr; column-gap: 20px; }
+  .home-principles .home-step { grid-row: 1 / 3; }
+  .home-principles h3 { font-size: 21px; margin: 0 0 8px; }
+  .home-principles p { max-width: none; }
+  .home-project, .home-place { grid-template-columns: 1fr; gap: 40px; }
+  .home-project-copy { grid-row: 1; }
+  .home-molecule { max-width: 360px; }
+  .home-project-status { font-size: 11px; margin-top: 22px; }
+  .home-section-heading { align-items: flex-start; flex-direction: column; gap: 16px; margin-bottom: 30px; }
+  .home-uses { grid-template-columns: 1fr; gap: 46px; }
+  .home-use { max-width: 440px; width: 100%; margin-inline: auto; }
+  .home-use:nth-child(2) { padding: 0; }
+  .home-use-media { aspect-ratio: 1.4; margin-bottom: 22px; }
+  .home-use h3 { font-size: 25px; }
+  .home-advantages { gap: 30px; }
+  .home-advantages::before { width: 260px; height: 320px; left: 40px; }
+  .home-advantages article { gap: 20px; }
+  .home-advantages h3 { font-size: 21px; }
+  .home-stories { grid-template-columns: 1fr; gap: 38px; margin-top: 35px; }
+  .home-stories > a { gap: 20px; }
+  .home-story-number { font-size: 48px; }
+  .home-stories h3 { font-size: 26px; }
+  .home-contact { padding-block: 65px 80px; }
+  .home-contact h2 { font-size: 39px; }
+  .home-contact::before { height: 240px; width: 95%; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .home-page *, .home-page *::before { transition: none!important; }
+  .home-button:hover, .home-use:hover .home-use-media img, .home-link:hover > span, a:hover .home-link > span { transform: none; }
+}

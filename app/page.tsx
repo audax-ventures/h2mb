@@ -1,24 +1,115 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Arrow, CTA } from '@/components/site';
+import { Arrow } from '@/components/site';
+import './home.css';
+
+const principles = [
+  { title: 'Produce locally', text: 'Build on Manitoba’s renewable energy resources.' },
+  { title: 'Connect industries', text: 'Bring hydrogen supply and potential users together.' },
+  { title: 'Enable change', text: 'Help develop a practical market for green hydrogen.' },
+];
+
+const advantages = [
+  { title: 'Renewable foundations', text: 'Manitoba’s hydroelectric resources are central to our vision for green hydrogen.' },
+  { title: 'Connected geography', text: 'Road and rail links connect the Prairies to markets across North America.' },
+  { title: 'Industrial opportunity', text: 'Transportation, agriculture, and manufacturing create opportunities for hydrogen adoption.' },
+];
 
 export default function Home() {
-  return <>
-    <section className="hero hero-with-photo">
-      <div className="container hero-content">
-        <div className="hero-topline"><span className="eyebrow"><span className="tiny-dot" />Made for a cleaner tomorrow</span><span className="hero-location">WINNIPEG, MB / CANADA</span></div>
-        <h1>Green hydrogen.<br /><em>Prairie potential.</em></h1>
-        <div className="hero-bottom"><div><p>We’re developing Manitoba’s hydrogen economy. Connecting local production with the industries ready for what’s next.</p><Link className="button button-lime" href="/project">Explore our project <Arrow /></Link></div></div>
+  return <div className="home-page">
+    <section className="home-hero home-container" aria-labelledby="home-title">
+      <div className="home-hero-copy">
+        <span className="home-eyebrow"><span className="home-dot" />Rooted in Manitoba. Looking forward.</span>
+        <h1 id="home-title">Green hydrogen.<br /><em>Prairie potential.</em></h1>
+        <p>We’re developing Manitoba’s hydrogen economy. Connecting local production with the industries ready for what’s next.</p>
+        <div className="home-actions">
+          <Link className="home-button" href="/project">Explore our project <Arrow /></Link>
+          <Link className="home-link" href="/process">Follow the process <Arrow /></Link>
+        </div>
       </div>
-      <figure className="hero-photo-frame">
-        <Image src="/images/hydrogen-applications.png" alt="Wooden blocks showing hydrogen storage, water, refuelling, energy and transport, with a hand placing an H₂ block." width={1532} height={1026} sizes="(max-width: 760px) calc(100vw - 56px), (max-width: 1550px) 55vw, 800px" preload className="hero-photo" />
+      <figure className="home-hero-figure">
+        <div className="home-photo-shape">
+          <Image src="/images/hydrogen-applications.png" alt="Wooden blocks showing hydrogen storage, water, refuelling, energy and transport, with a hand placing an H₂ block." width={1532} height={1026} sizes="(max-width: 760px) calc(100vw - 48px), (max-width: 1440px) 48vw, 650px" preload />
+        </div>
+        <figcaption><span className="home-dot" />Small molecule. Big possibility.</figcaption>
       </figure>
-      <div className="hero-caption"><span>01 / THE NEXT ENERGY CHAPTER</span><a href="#opportunity">Discover the opportunity ↓</a></div>
+      <a className="home-scroll" href="#opportunity"><span aria-hidden="true">↓</span>Discover the opportunity</a>
     </section>
-    <section className="intro-section section container" id="opportunity"><span className="eyebrow">Rooted in Manitoba. Looking forward.</span><div className="intro-grid"><h2>A local foundation.<br />A lasting impact.</h2><div><p className="lead">The energy transition needs practical solutions. We’re working to make green hydrogen one of them.</p><p>H2MB is developing a green hydrogen production project and working with local industries to explore fuel-cell technologies and new pathways to reduce emissions.</p><Link className="text-link" href="/about">Meet H2MB <Arrow /></Link></div></div><div className="principles"><div><span>01</span><h3>Produce locally</h3><p>Build on Manitoba’s renewable energy resources.</p></div><div><span>02</span><h3>Connect industries</h3><p>Bring hydrogen supply and potential users together.</p></div><div><span>03</span><h3>Enable change</h3><p>Help develop a practical market for green hydrogen.</p></div></div></section>
-    <section className="project-feature"><div className="project-art"><div className="orbital" aria-hidden="true"><i /><i /><i /><b>H<span>2</span></b></div><span className="art-label">RENEWABLE ENERGY → NEW POSSIBILITIES</span></div><div className="project-copy"><span className="eyebrow">Our project</span><h2>Building the supply.<br />Opening the possibilities.</h2><p>Our ambition is to produce and deliver the lowest-cost green hydrogen in the Prairie region. We’re working toward production that can support a growing local hydrogen economy.</p><div className="status"><span className="tiny-dot" />Project development</div><Link className="text-link" href="/project">Inside our approach <Arrow /></Link></div></section>
-    <section className="section container"><div className="section-heading"><div><span className="eyebrow">Where hydrogen can make a difference</span><h2>One molecule.<br />Many possibilities.</h2></div><Link className="text-link" href="/applications">Explore applications <Arrow /></Link></div><div className="application-grid"><Link className="application-card" href="/applications#transportation"><div className="card-image transport" /><div className="card-title"><span>01 / MOBILITY</span><h3>Transportation <Arrow /></h3><p>New ways to move people and goods.</p></div></Link><Link className="application-card" href="/applications#industry"><div className="card-image industry" /><div className="card-title"><span>02 / PRODUCTION</span><h3>Industry <Arrow /></h3><p>A cleaner input for essential processes.</p></div></Link><Link className="application-card" href="/applications#heat-power"><div className="card-image power"><svg viewBox="0 0 400 300" aria-hidden="true"><path d="M200 20L130 280M200 20L270 280M140 240H260M150 200H250M160 160H240M170 120H230M140 80H260M155 105L200 65L245 105M145 240L250 200L165 160L230 120M255 240L150 200L235 160L170 120M0 125Q100 150 145 95M255 95Q330 150 400 125" /></svg></div><div className="card-title"><span>03 / ENERGY</span><h3>Heat & Power <Arrow /></h3><p>Exploring hydrogen’s role in energy systems.</p></div></Link></div></section>
-    <section className="manitoba-section"><div className="container manitoba-grid"><div><span className="eyebrow">The Manitoba advantage</span><h2>The right place<br />to start something<br /><em>meaningful.</em></h2><p>Renewable resources. Industrial know-how. Connections across the continent. Our home province offers a compelling foundation for a hydrogen economy.</p><Link className="text-link" href="/insights/manitoba-advantage">Why Manitoba <Arrow /></Link></div><div className="advantage-list"><article><span>01</span><div><h3>Renewable foundations</h3><p>Manitoba’s hydroelectric resources are central to our vision for green hydrogen.</p></div></article><article><span>02</span><div><h3>Connected geography</h3><p>A Prairie location with road and rail links to markets across North America.</p></div></article><article><span>03</span><div><h3>Industrial opportunity</h3><p>Transportation, agriculture, and manufacturing create opportunities to explore hydrogen adoption.</p></div></article></div></div></section>
-    <section className="section container"><div className="section-heading"><div><span className="eyebrow">Ideas for the road ahead</span><h2>A clearer view of hydrogen.</h2></div><Link className="text-link" href="/insights">All insights <Arrow /></Link></div><div className="insight-preview"><Link href="/insights/green-hydrogen"><span className="eyebrow">Hydrogen explained · 3 min read</span><h3>Green hydrogen, from the beginning.</h3><span className="text-link">Understand the process <Arrow /></span></Link><Link href="/insights/manitoba-advantage"><span className="eyebrow">Regional perspective · 3 min read</span><h3>Why the hydrogen conversation belongs in Manitoba.</h3><span className="text-link">Explore the opportunity <Arrow /></span></Link></div></section><CTA />
-  </>;
+
+    <section className="home-intro home-container home-section" id="opportunity" aria-labelledby="opportunity-title">
+      <div className="home-centered-copy">
+        <span className="home-eyebrow">A local foundation. A lasting impact.</span>
+        <h2 id="opportunity-title">A new energy chapter.<br /><em>Starting right here.</em></h2>
+        <p>The energy transition needs practical solutions. H2MB is developing a green hydrogen production project and exploring new pathways to reduce emissions with local industries.</p>
+        <Link className="home-link" href="/about">Meet H2MB <Arrow /></Link>
+      </div>
+      <div className="home-principles">
+        {principles.map((item, i) => <article key={item.title}>
+          <span className="home-step" aria-hidden="true">0{i + 1}</span>
+          <h3>{item.title}</h3><p>{item.text}</p>
+        </article>)}
+      </div>
+    </section>
+
+    <section className="home-project home-container home-section" aria-labelledby="home-project-title">
+      <div className="home-project-visual">
+        <svg className="home-molecule" viewBox="0 0 500 470" role="img" aria-label="An illustrated hydrogen molecule surrounded by orbiting paths">
+          <defs><radialGradient id="home-molecule-wash"><stop stopColor="#e6f1dc" /><stop offset="1" stopColor="#f7faf4" /></radialGradient></defs>
+          <path d="M60 225C50 99 150 34 279 48S462 162 440 287S298 449 168 409S66 329 60 225Z" fill="url(#home-molecule-wash)" />
+          <g fill="none" stroke="#8aaf78" strokeWidth="1.5">
+            <ellipse cx="250" cy="235" rx="190" ry="83" transform="rotate(-32 250 235)" />
+            <ellipse cx="250" cy="235" rx="190" ry="83" transform="rotate(32 250 235)" />
+            <ellipse cx="250" cy="235" rx="83" ry="190" />
+          </g>
+          <circle cx="250" cy="235" r="76" fill="#fff" />
+          <text x="250" y="261" textAnchor="middle" fill="#386632" fontFamily="Arial, sans-serif" fontSize="80" letterSpacing="-6">H₂</text>
+          <circle cx="104" cy="138" r="15" fill="#629c49" /><circle cx="388" cy="345" r="12" fill="#143c88" /><circle cx="250" cy="45" r="8" fill="#b8d89a" />
+        </svg>
+        <Link className="home-link" href="/process">From water to possibility <Arrow /></Link>
+      </div>
+      <div className="home-project-copy">
+        <span className="home-eyebrow">Our project</span>
+        <h2 id="home-project-title">Building the supply.<br /><em>Opening possibilities.</em></h2>
+        <p>Our ambition is to produce and deliver the lowest-cost green hydrogen in the Prairie region. We’re working toward production that can support a growing local hydrogen economy.</p>
+        <span className="home-project-status"><span className="home-dot" />In development, with the future in mind.</span>
+        <Link className="home-link" href="/project">Inside our approach <Arrow /></Link>
+      </div>
+    </section>
+
+    <section className="home-applications home-container home-section" aria-labelledby="home-applications-title">
+      <div className="home-section-heading">
+        <div><span className="home-eyebrow">Where hydrogen can make a difference</span><h2 id="home-applications-title">One molecule.<br /><em>Many possibilities.</em></h2></div>
+        <Link className="home-link" href="/applications">Explore applications <Arrow /></Link>
+      </div>
+      <div className="home-uses">
+        <Link className="home-use" href="/applications#transportation">
+          <div className="home-use-media home-use-transport"><Image src="/images/transport.webp" alt="Transportation and freight" fill sizes="(max-width: 760px) calc(100vw - 48px), 30vw" /></div>
+          <span className="home-eyebrow">Mobility</span><h3>Transportation <Arrow /></h3><p>New ways to move people and goods.</p>
+        </Link>
+        <Link className="home-use" href="/applications#industry">
+          <div className="home-use-media home-use-industry"><Image src="/images/industry.webp" alt="Industrial production facilities" fill sizes="(max-width: 760px) calc(100vw - 48px), 30vw" /></div>
+          <span className="home-eyebrow">Production</span><h3>Industry <Arrow /></h3><p>A cleaner input for essential processes.</p>
+        </Link>
+        <Link className="home-use" href="/applications#heat-power">
+          <div className="home-use-media home-use-power"><svg viewBox="0 0 400 300" aria-hidden="true"><circle cx="200" cy="148" r="100" fill="#edf4e5" /><path d="M208 62L141 163H193L180 241L261 132H208Z" fill="#6f9c4c" /><path d="M90 100C47 174 91 255 161 271M302 210C350 132 308 50 238 30" fill="none" stroke="#9dbaa4" strokeWidth="2" strokeLinecap="round" /><circle cx="90" cy="100" r="7" fill="#143c88" /><circle cx="302" cy="210" r="7" fill="#629c49" /></svg></div>
+          <span className="home-eyebrow">Energy</span><h3>Heat & power <Arrow /></h3><p>Exploring hydrogen’s role in energy systems.</p>
+        </Link>
+      </div>
+    </section>
+
+    <section className="home-place home-container home-section" aria-labelledby="home-place-title">
+      <div className="home-place-copy"><span className="home-eyebrow">The Manitoba advantage</span><h2 id="home-place-title">The right place<br />to start something<br /><em>meaningful.</em></h2><p>Renewable resources. Industrial know-how. Connections across the continent. Our home province offers a compelling foundation for a hydrogen economy.</p><Link className="home-link" href="/insights/manitoba-advantage">Why Manitoba <Arrow /></Link></div>
+      <div className="home-advantages">{advantages.map((item, i) => <article key={item.title}><span className="home-step" aria-hidden="true">0{i + 1}</span><div><h3>{item.title}</h3><p>{item.text}</p></div></article>)}</div>
+    </section>
+
+    <section className="home-insights home-container home-section" aria-labelledby="home-insights-title">
+      <div className="home-section-heading"><div><span className="home-eyebrow">Ideas for the road ahead</span><h2 id="home-insights-title">A clearer view <em>of hydrogen.</em></h2></div><Link className="home-link" href="/insights">All insights <Arrow /></Link></div>
+      <div className="home-stories">
+        <Link href="/insights/green-hydrogen"><span className="home-story-number" aria-hidden="true">01</span><div><span className="home-eyebrow">Hydrogen explained · 3 min read</span><h3>Green hydrogen,<br />from the beginning.</h3><span className="home-link">Understand the process <Arrow /></span></div></Link>
+        <Link href="/insights/manitoba-advantage"><span className="home-story-number" aria-hidden="true">02</span><div><span className="home-eyebrow">Regional perspective · 3 min read</span><h3>Why the hydrogen conversation belongs in Manitoba.</h3><span className="home-link">Explore the opportunity <Arrow /></span></div></Link>
+      </div>
+    </section>
+
+    <section className="home-contact home-container" aria-labelledby="home-contact-title"><span className="home-eyebrow">Let’s build what’s next</span><h2 id="home-contact-title">Big possibilities.<br /><em>One conversation away.</em></h2><Link className="home-button" href="/contact">Connect with H2MB <Arrow /></Link></section>
+  </div>;
 }
