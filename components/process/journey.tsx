@@ -42,7 +42,7 @@ export function ProcessJourney() {
     let frame = 0, lastActive = -1, disposed = false;
     let moments: FlowMoment[] = [], oxygenMoments: FlowMoment[] = [];
     let stageDistances: { start: number; end: number }[] = [];
-    let stageBounds: { top: number; height: number; illustrationTop: number; illustrationHeight: number }[] = [];
+    let stageBounds: { top: number; height: number; illustrationTop: number; illustrationHeight: number; footerTop: number }[] = [];
     let pathLength = 0, oxygenLength = 0;
 
     const measure = () => {
@@ -52,7 +52,7 @@ export function ProcessJourney() {
       particleSvg.current!.setAttribute('viewBox', viewBox);
       stageBounds = stages.map((stage, i) => {
         const rect = stage.getBoundingClientRect(), illustration = diagrams[i].getBoundingClientRect();
-        return { top: rect.top - bounds.top, height: rect.height, illustrationTop: illustration.top - bounds.top, illustrationHeight: illustration.height };
+        return { top: rect.top - bounds.top, height: rect.height, illustrationTop: illustration.top - bounds.top, illustrationHeight: illustration.height, footerTop: stage.querySelector('.stage-footer')!.getBoundingClientRect().top - bounds.top };
       });
       const sample = (element: SVGPathElement, local = false): FlowPoint[] => {
         const length = element.getTotalLength();
@@ -66,13 +66,19 @@ export function ProcessJourney() {
         });
       };
       const scenePoints = guides.map(guide => sample(guide, true));
-      const gutter = bounds.width <= 760 ? 10 : 20;
-      const lane = (side: string | undefined) => side === 'left' ? gutter : bounds.width - gutter;
-      const connect = (start: FlowPoint, end: FlowPoint, from: number, to: number, outgoing: string | undefined, incoming: string | undefined, group: SVGGElement) => {
+      const mobile = bounds.width <= 760;
+      const lane = (index: number, branch: boolean) => bounds.width * (branch ? .26 : index === 3 || index === 4 ? .18 : index % 2 ? .22 : .78);
+      const connect = (start: FlowPoint, end: FlowPoint, from: number, to: number, group: SVGGElement, branch = false) => {
         const a = stageBounds[from], b = stageBounds[to];
         const bridgeY = (a.top + a.height + b.top) / 2;
-        const outX = lane(outgoing), inX = lane(incoming);
-        const d = roundedPipe([start, { x: outX, y: start.y }, { x: outX, y: bridgeY }, { x: inX, y: bridgeY }, { x: inX, y: end.y }, end]);
+        const exitY = (a.illustrationTop + a.illustrationHeight + a.footerTop) / 2 + (branch ? 12 : 0);
+        const enterY = b.illustrationTop - 30;
+        // Desktop pipes descend through the illustration columns. On phones an
+        // inset lane keeps the stream beside the copy, then returns to the visual.
+        const points = mobile
+          ? [start, { x: start.x, y: exitY }, { x: lane(from, branch), y: exitY }, { x: lane(from, branch), y: bridgeY }, { x: lane(to, branch), y: bridgeY }, { x: lane(to, branch), y: enterY }, { x: end.x, y: enterY }, end]
+          : [start, { x: start.x, y: bridgeY }, { x: end.x, y: bridgeY }, end];
+        const d = roundedPipe(points, mobile ? 20 : 44);
         const paths = Array.from(group.querySelectorAll('path'));
         paths.forEach(line => line.setAttribute('d', d));
         const scale = Math.min(diagrams[from].getBoundingClientRect().width / diagrams[from].viewBox.baseVal.width, diagrams[to].getBoundingClientRect().width / diagrams[to].viewBox.baseVal.width);
@@ -93,7 +99,7 @@ export function ProcessJourney() {
       scenePoints.forEach((points, i) => {
         if (i) {
           const previous = scenePoints[i - 1];
-          append(connect(previous[previous.length - 1], points[0], i - 1, i, guides[i - 1].dataset.outlet, guides[i].dataset.inlet, joins[i - 1]));
+          append(connect(previous[previous.length - 1], points[0], i - 1, i, joins[i - 1]));
         }
         const start = distance;
         const rect = stageBounds[i];
@@ -109,7 +115,7 @@ export function ProcessJourney() {
       const oxygenStart = sample(diagrams[3].querySelector<SVGPathElement>('[data-flow-guide="oxygen"]')!, true);
       const oxygenEnd = sample(diagrams[4].querySelector<SVGPathElement>('[data-flow-guide="oxygen"]')!, true);
       const oxygenJoin = content.querySelector<SVGGElement>('.oxygen-join')!;
-      const oxygenConnection = connect(oxygenStart[oxygenStart.length - 1], oxygenEnd[0], 3, 4, 'right', 'right', oxygenJoin);
+      const oxygenConnection = connect(oxygenStart[oxygenStart.length - 1], oxygenEnd[0], 3, 4, oxygenJoin, true);
       const oxygenPoints = [...oxygenStart, ...oxygenConnection, ...oxygenEnd];
       oxygenRoute.current!.setAttribute('d', oxygenPoints.map((point, i) => `${i ? 'L' : 'M'} ${point.x} ${point.y}`).join(' '));
       oxygenLength = oxygenRoute.current!.getTotalLength();
@@ -155,8 +161,8 @@ export function ProcessJourney() {
         particle.setAttribute('cy', String(point.y));
         particle.style.opacity = String(1 - index * .15);
         const purification = stageDistances[1], reaction = stageDistances[3];
-        const clean = clamp((position - purification.start) / ((purification.end - purification.start) * .43));
-        particle.style.fill = position > reaction.start + (reaction.end - reaction.start) * .6 ? '#8bcc36' : `rgb(${Math.round(84 - clean * 75)} ${Math.round(139 + clean * 33)} ${Math.round(152 + clean * 76)})`;
+        const clean = clamp((position - purification.start) / ((purification.end - purification.start) * .63));
+        particle.style.fill = position > reaction.start + (reaction.end - reaction.start) * .39 ? '#8bcc36' : `rgb(${Math.round(84 - clean * 75)} ${Math.round(139 + clean * 33)} ${Math.round(152 + clean * 76)})`;
       });
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
@@ -213,8 +219,10 @@ export function ProcessJourney() {
         const next = processSteps[index + 1];
         return <section className={`journey-stage stage-${index} ${index % 2 ? 'stage-reverse' : ''} ${active === index ? 'is-active' : ''}`} key={step.id} id={step.id} aria-labelledby={`${step.id}-title`}>
           <header className="stage-heading container">
+            <div className="stage-heading-label">
             <div className="stage-number" aria-hidden="true"><span>STEP</span>{String(index + 1).padStart(2, '0')}</div>
             <h2 id={`${step.id}-title`}><span className="process-sr-only">Step {index + 1}: </span>{step.label}</h2>
+            </div>
           </header>
           <div className="stage-inner container">
             <div className="stage-copy">
@@ -224,8 +232,10 @@ export function ProcessJourney() {
             <div className="process-visual"><Scene /></div>
           </div>
           <footer className="stage-footer container">
+            <div className="stage-footer-content">
             <p><span>RESULT</span>{step.result}</p>
             {next && <a href={`#${next.id}`} aria-label={`Continue to step ${index + 2}: ${next.label}`}><span>Next: {next.label}</span><span aria-hidden="true">↓</span></a>}
+            </div>
           </footer>
         </section>;
       })}
