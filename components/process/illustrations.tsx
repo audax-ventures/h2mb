@@ -1,114 +1,299 @@
 import type { ReactNode } from 'react';
 
-const water = '#09ace4', hydrogen = '#8bcc36', oxygen = '#f47745', ink = '#193f3d';
-function Pipe({ d, color = water, dashed = false }: { d: string; color?: string; dashed?: boolean }) {
-  return <g fill="none" strokeLinecap="round" strokeLinejoin="round"><path d={d} stroke="#416b70" strokeWidth="24" /><path d={d} stroke={color} strokeWidth="14" />{dashed && <path d={d} stroke="#ffffff" strokeOpacity=".38" strokeWidth="4" className="diagram-flow" />}</g>;
-}
-// These guides follow the actual equipment pipes, including the reaction inside the cell.
-// The page joins their endpoints and moves the same scroll-driven tracer along the result.
-function FlowGuide({ d, branch = false }: { d: string; branch?: boolean }) {
-  return <path d={d} data-flow-guide={branch ? 'oxygen' : 'main'} fill="none" stroke="none" aria-hidden="true" />;
-}
-function Label({ x, y, children, color = ink }: { x: number; y: number; children: ReactNode; color?: string }) { return <text x={x} y={y} fill={color} textAnchor="middle" className="diagram-label">{children}</text>; }
-function Tree({ x, y, size = 1 }: { x: number; y: number; size?: number }) { return <g transform={`translate(${x} ${y}) scale(${size})`}><path d="M0 0V-100" stroke="#5b6240" strokeWidth="8" /><path d="M-42-35L0-115L42-35ZM-32-72L0-140L32-72Z" fill="#348a4f" /><path d="M0-140L32-72H0V-35H42L0-115" fill="#195e3f" /></g>; }
-function Tank({ x, y, color = hydrogen, label = 'H₂', height = 170 }: { x: number; y: number; color?: string; label?: string; height?: number }) {
-  return <g transform={`translate(${x} ${y})`}><rect x="-25" y="0" width="50" height={height} rx="22" fill="#f4f7ed" stroke={ink} strokeWidth="2" /><rect x="-19" y="16" width="38" height={height-28} rx="17" fill={color} /><path d="M-10-8H10M0-8V0" stroke={ink} strokeWidth="6" /><Label x={0} y={height/2+5}>{label}</Label><path d={`M-20 ${height-18}H20`} stroke={ink} strokeOpacity=".25" /></g>;
-}
-function Base({ children, name, viewBox = "0 45 600 440" }: { children: ReactNode; name: string; viewBox?: string }) { return <svg className="process-diagram" viewBox={viewBox} role="img" aria-label={name}><ellipse cx="300" cy="420" rx="235" ry="26" fill="#183f3720" />{children}</svg>; }
-export function Lake() { return <Base viewBox="20 60 560 410" name="Illustrated forest lake with an intake pipe carrying raw water toward treatment">
-  <path d="M45 275Q140 175 290 230T560 285L550 385Q280 450 35 365Z" fill="#8dc565" />
-  <Tree x={80} y={265} size={1.1} /><Tree x={150} y={225} size={.8} /><Tree x={495} y={255} size={1.25} /><Tree x={440} y={220} size={.75} />
-  <path d="M75 300Q145 242 285 267T530 300Q548 335 465 370T190 383Q55 370 75 300Z" fill="#548b98" stroke="#bfe89b" strokeWidth="10" />
-  <g className="lake-ripples" fill="none" stroke="#d7f6fb" strokeWidth="3"><path d="M125 310Q175 300 225 310M290 320Q350 310 410 320M180 351Q240 341 300 351M350 350Q390 340 430 350" /></g>
-  <g className="raw-minerals" fill="#345c62">{[[155,325],[260,295],[330,360],[405,306],[210,375]].map(([x,y],i)=><circle key={i} cx={x} cy={y} r={4} />)}</g>
-  <Pipe d="M320 330V470" color="#548b98" dashed /><rect x="303" y="309" width="34" height="35" rx="5" fill="#d3e4e9" stroke={ink} strokeWidth="2" /><path d="M309 317H331M309 325H331M309 333H331" stroke={ink} strokeWidth="2" />
-  <FlowGuide d="M320 345V470" />
+// Process schematics drawn in a P&ID-inspired line style on a shared 640 × 420 grid.
+// Streams: raw water, treated water, power, hydrogen, oxygen. Each line has a faint rail
+// that draws in when the figure becomes active, plus a dashed core that animates the flow.
+type Stream = 'raw' | 'water' | 'power' | 'h2' | 'o2';
 
-</Base>; }
-export function Purification() { return <Base viewBox="15 110 570 335" name="Raw water passes through filtration, reverse osmosis and deionization, changing to clear blue">
-  <defs><linearGradient id="purifying-water" gradientUnits="userSpaceOnUse" x1="35" y1="270" x2="565" y2="270"><stop stopColor="#548b98" /><stop offset=".45" stopColor="#2aafd5" /><stop offset="1" stopColor="#09ace4" /></linearGradient></defs>
-  <Pipe d="M300 110H140V270" color="#548b98" dashed /><Pipe d="M140 270H565" color="url(#purifying-water)" dashed /><Pipe d="M565 270V430H300V445" dashed />
-  <FlowGuide d="M300 110H140V270H565V430H300V445" />
-  {[{x:90,name:'FILTER',c:'#779ca6'},{x:250,name:'RO MEMBRANE',c:'#36a7c8'},{x:410,name:'DEIONIZATION',c:'#09ace4'}].map(({x,name,c},i)=><g key={name}>
-    <rect x={x} y="145" width="105" height="225" rx="25" fill="#f4f7ed" stroke={ink} strokeWidth="3" /><rect className={`purifying-column-${i}`} x={x+13} y="165" width="79" height="183" rx="16" fill={c} />
-    {Array.from({length:6},(_,j)=><path key={j} d={`M${x+20} ${185+j*25}H${x+85}`} stroke={i===0?'#385f6b':'#e9f7f7'} strokeWidth={i===0?6:3} />)}
-    <rect x={x+22} y="132" width="61" height="22" rx="5" fill="#244f59" /><Label x={x+52} y={403}>{name}</Label>
-  </g>)}
-  <g className="purification-impurities" fill="#345762">{[[120,203],[164,234],[143,285],[175,311],[281,200],[310,302]].map(([x,y],i)=><circle cx={x} cy={y} r="5" key={i} />)}</g>
-  <g className="clean-water-bubbles" fill="#dff9ff">{[190,240,290,325].map(y=><circle cx="461" cy={y} r="6" key={y} />)}</g>
+function Line({ d, s, optional = false }: { d: string; s: Stream; optional?: boolean }) {
+  return <g className={`dg-line dg-${s}${optional ? ' dg-optional' : ''}`}>
+    <path className="dg-rail" d={d} pathLength={1} />
+    <path className="dg-flow" d={d} />
+  </g>;
+}
+function Arrow({ x, y, s, dir = 'r' }: { x: number; y: number; s: Stream; dir?: 'r' | 'l' | 'u' | 'd' }) {
+  const rotate = { r: 0, d: 90, l: 180, u: 270 }[dir];
+  return <path className={`dg-arrow dg-${s}`} d="M-9-5L0 0L-9 5Z" transform={`translate(${x} ${y}) rotate(${rotate})`} />;
+}
+function Tag({ x, y, code, name, anchor = 'middle' }: { x: number; y: number; code?: string; name: string; anchor?: 'start' | 'middle' | 'end' }) {
+  return <g className="dg-tag" textAnchor={anchor}>
+    {code && <text x={x} y={y} className="dg-code">{code}</text>}
+    <text x={x} y={code ? y + 15 : y}>{name}</text>
+  </g>;
+}
+function Note({ x, y, children, anchor = 'middle' }: { x: number; y: number; children: ReactNode; anchor?: 'start' | 'middle' | 'end' }) {
+  return <text x={x} y={y} textAnchor={anchor} className="dg-note">{children}</text>;
+}
+function Instrument({ x, y, code, toY }: { x: number; y: number; code: string; toY: number }) {
+  return <g>
+    <path className="dg-thin dg-dashed" d={`M${x} ${y + 14}V${toY}`} />
+    <circle className="dg-eq" cx={x} cy={y} r="14" />
+    <text x={x} y={y + 4} textAnchor="middle" className="dg-instrument">{code}</text>
+  </g>;
+}
+function Frame({ name, children }: { name: string; children: ReactNode }) {
+  return <svg className="dg" viewBox="0 0 640 420" role="img" aria-label={name}>{children}</svg>;
+}
 
-</Base>; }
-export function Renewables() { return <Base viewBox="30 35 550 490" name="Wind, solar and hydropower supply electricity to electrolysis while the same purified water continues through its own blue pipe below">
-  <path d="M40 355Q150 300 280 350T570 355V415H40Z" fill="#9bcc73" />
-  <g transform="translate(165 180)"><path d="M0 0L-10 180H10Z" fill="#bdcddd" stroke={ink} strokeWidth="2" /><g className="wind-rotor">{[0,120,240].map(angle=><path key={angle} transform={`rotate(${angle})`} d="M0-5L-8-95Q-5-120 2-112L12-35Z" fill="#f5f8ef" stroke={ink} strokeWidth="2" />)}<circle r="12" fill={ink} /></g></g>
-  <g transform="translate(320 235)"><path d="M0 0H170L200 95H-25Z" fill="#1d5c9a" stroke="#ecf2e9" strokeWidth="5" /><g stroke="#7ac9ef" strokeWidth="2"><path d="M-8 32H180M-17 64H191M42 0L37 95M85 0V95M127 0L139 95" /></g><path d="M20 97V125M165 97V125" stroke={ink} strokeWidth="7" /></g>
-  <circle cx="430" cy="100" r="30" fill="#f5c94e" /><path d="M430 53V42M430 158V148M383 100H372M487 100H477M396 66L388 58M463 133L471 141" stroke="#d79d18" strokeWidth="3" />
-  <Pipe d="M165 365V410H290V380H370" color="#f5c94e" dashed /><rect x="370" y="358" width="145" height="62" rx="9" fill="#f6f8ef" stroke={ink} strokeWidth="2" /><Label x={441} y={396}>AC → DC ⚡</Label>
-  <path d="M65 270Q85 250 105 270M65 285Q85 265 105 285M65 300Q85 280 105 300" stroke={water} strokeWidth="6" fill="none" /><Label x={85} y={330}>HYDRO</Label>
-  <Pipe d="M300 35H40V445H300V525" dashed /><Label x={155} y={480}>PURIFIED WATER ↓</Label>
-  <FlowGuide d="M300 35H40V445H300V525" />
-</Base>; }
-export function Electrolyzer() { return <Base name="Simplified PEM electrolyzer: hydrogen forms at the negative cathode on the left, oxygen at the positive anode on the right, separated by a membrane">
-  <Pipe d="M440 45V150" dashed /><Label x={440} y={46}>PURIFIED WATER ↓</Label>
-  <rect x="120" y="150" width="360" height="230" rx="24" fill="#ffffff" stroke={ink} strokeWidth="3" /><rect x="145" y="177" width="135" height="175" rx="12" fill="#d5edaa" /><rect x="320" y="177" width="135" height="175" rx="12" fill="#72d2ef" />
-  <rect x="192" y="190" width="15" height="140" rx="4" fill="#244f59" /><rect x="393" y="190" width="15" height="140" rx="4" fill="#244f59" /><rect x="290" y="168" width="20" height="195" rx="4" fill="#ffd260" />
-  <path d="M200 190V108H400V190" stroke={ink} strokeWidth="4" fill="none" /><rect x="268" y="89" width="65" height="38" rx="6" fill={hydrogen} stroke={ink} strokeWidth="2" /><Label x={300} y={114}>DC ⚡</Label>
-  <Label x={175} y={184}>−</Label><Label x={425} y={184}>+</Label><Label x={201} y={405}>CATHODE</Label><Label x={400} y={405}>ANODE</Label>
-  <g className="reaction-hydrogen" fill={hydrogen} stroke="#5d873a" strokeWidth="1.5">{[0,1,2,3].map(i=><g key={i} transform={`translate(${226+(i%2)*25} ${220+i*31})`}><circle r="8" /><circle cx="10" r="8" /></g>)}</g>
-  <g className="reaction-oxygen" fill={oxygen} stroke="#b57257" strokeWidth="1.5">{[0,1,2].map(i=><g key={i} transform={`translate(350 ${225+i*40})`}><circle r="9" /><circle cx="12" r="9" /></g>)}</g>
-  <g className="ion-crossing"><path d="M365 270H240" stroke="#b3984d" strokeWidth="2" strokeDasharray="5 7" /><circle cx="300" cy="270" r="12" fill="#f9f1c5" stroke="#b3984d" /><Label x={300} y={275}>H⁺</Label></g>
-  <Pipe d="M150 330H70V430H200V485" color={hydrogen} dashed /><Pipe d="M450 330H530V485" color={oxygen} dashed /><Label x={165} y={470}>H₂ ↓</Label><Label x={558} y={445}>O₂ ↓</Label>
-  <FlowGuide d="M440 45V265H220V330H70V430H200V485" />
-  <FlowGuide d="M350 265V330H530V485" branch />
-  <path d="M300 365V430" stroke="#9b8a4b" strokeWidth="1.5" /><Label x={300} y={454}>SELECTIVE MEMBRANE</Label>
-</Base>; }
-export function OxygenRecovery() { return <Base viewBox="0 80 600 440" name="Oxygen flows into separate cylinders and can serve wastewater treatment, glass manufacturing and metals processing after suitable conditioning">
-  <Pipe d="M450 80V188H140V220" color={oxygen} dashed />
-  <FlowGuide d="M450 80V188H140V300" branch />
-  {[140,215,290].map((x,i)=><g key={x}><Pipe d={`M${x} 188V220`} color={oxygen} /><Tank x={x} y={220} color={oxygen} label="O₂" height={172-i*8} /></g>)}
-  <g transform="translate(365 215)">
-    <g fill="none" stroke={water} strokeWidth="4" strokeLinecap="round"><path d="M10 30q10-10 20 0t20 0M10 43q10-10 20 0t20 0" /><circle cx="30" cy="11" r="4" /></g><Label x={115} y={36}>WATER</Label>
-    <path d="M22 72V82L12 96V116Q12 121 18 121H42Q48 121 48 116V96L38 82V72Z" fill="#49bea9" stroke={ink} strokeWidth="2" /><path d="M19 103H41" stroke={ink} strokeWidth="2" /><Label x={115} y={108}>GLASS</Label>
-    <path d="M9 149H51V158H37V180H51V189H9V180H23V158H9Z" fill="#4a7d99" stroke={ink} strokeWidth="2" /><Label x={115} y={175}>METALS</Label>
-  </g>
-  <Pipe d="M40 80V470H300V520" color={hydrogen} dashed /><Label x={420} y={510}>HYDROGEN ↓</Label>
-  <FlowGuide d="M40 80V470H300V520" />
-</Base>; }
-export function Conditioning() { return <Base viewBox="15 65 570 430" name="Hydrogen passes through a separator, purification stage, and dryers, with moisture removed and quality checked">
-  <Pipe d="M300 65H152V270H565V450H300V495" color={hydrogen} dashed /><FlowGuide d="M300 65H152V270H565V450H300V495" />
-  {[{x:105,n:'SEPARATOR',h:155},{x:260,n:'DEOXO',h:190},{x:415,n:'DRYER',h:220}].map(({x,n,h},i)=><g key={n}><rect x={x} y={370-h} width="95" height={h} rx="24" fill="#f2f5ea" stroke={ink} strokeWidth="2" /><rect x={x+12} y={385-h} width="71" height={h-32} rx="18" fill={hydrogen} />{i===2&&[190,216,242,268,294,320].map(y=><path key={y} d={`M${x+17} ${y}H${x+78}`} stroke="#47772b" strokeWidth="4" strokeDasharray="3 6" />)}<Label x={x+47} y={401}>{n}</Label></g>)}
-  <g className="moisture-drops" fill={water}><path d="M140 289q-18 25 0 25q18 0 0-25M176 316q-13 20 0 20q13 0 0-20M300 246q-12 18 0 18q12 0 0-18" /></g>
-  <path d="M152 370V405H95" stroke="#168ab5" strokeWidth="7" fill="none" /><Label x={123} y={428}>MOISTURE OUT</Label><circle cx="475" cy="100" r="26" fill={hydrogen} /><path d="M461 100L472 111L489 88" stroke={ink} strokeWidth="4" fill="none" />
-</Base>; }
-export function Storage() { return <Base viewBox="10 50 580 405" name="Hydrogen passes through a compressor and cooling stage into engineered compressed-gas storage vessels">
-  <Pipe d="M110 50V255H100M260 255H328V190H520M505 385V430H300V455" color={hydrogen} dashed /><rect x="100" y="190" width="160" height="155" rx="14" fill="#84b8c7" stroke={ink} strokeWidth="3" />
-  <FlowGuide d="M110 50V255H328V190H505V430H300V455" />
-  <circle cx="180" cy="250" r="43" fill="#f7f9ee" stroke={ink} strokeWidth="2" /><g className="compressor-rotor"><path d="M180 210V290M140 250H220M152 222L208 278M152 278L208 222" stroke="#3d8656" strokeWidth="7" /></g><circle cx="180" cy="250" r="12" fill={ink} /><Label x={180} y={326}>COMPRESSOR</Label>
-  <path d="M119 358H240M130 369H230M145 380H215" stroke={water} strokeWidth="4" /><Label x={180} y={409}>COOLING</Label>
-  {[365,435,505].map(x=><g key={x}><Pipe d={`M${x} 190V215`} color={hydrogen} /><Tank x={x} y={220} height={185} /></g>)}
-  <g transform="translate(285 100)"><circle r="40" fill="#f9faef" stroke={ink} strokeWidth="2" /><path d="M-28 0A28 28 0 0 1 28 0" stroke="#92ce5c" strokeWidth="7" fill="none" /><g className="pressure-needle"><path d="M0 0L22-22" stroke={ink} strokeWidth="3" /></g><circle r="5" fill={ink} /></g>
-</Base>; }
-function Truck({ x, y, liquid = false }: { x: number; y: number; liquid?: boolean }) { return <g transform={`translate(${x} ${y})`}><path d="M0 70H285V125H0Z" fill="#32634c" /><path d="M223 38H265L289 75V114H215V38Z" fill="#8dd461" stroke={ink} strokeWidth="2" /><path d="M234 48H259L276 72H234Z" fill="#286b86" />{liquid?<rect x="4" y="25" width="199" height="75" rx="36" fill="#91d2ec" stroke={ink} strokeWidth="2" />:[27,49,71].map(y=><rect key={y} x="5" y={y} width="197" height="19" rx="9" fill={hydrogen} stroke={ink} strokeWidth="1.5" />)}<Label x={100} y={liquid?72:62}>{liquid?'LIQUID H₂':'H₂'}</Label>{[43,184,253].map(x=><g key={x}><circle cx={x} cy="123" r="18" fill={ink} /><circle cx={x} cy="123" r="8" fill="#dbe9ed" /></g>)}</g>; }
-export function Delivery() { return <Base viewBox="10 65 580 415" name="Two alternative delivery paths: a compressed-gas tube trailer and a cryogenic liquid hydrogen tanker at approximately minus 253 degrees Celsius">
-  <Pipe d="M300 65V100H150Q180 100 180 130V160M150 100H480V315" color={hydrogen} dashed />
-  <g className="delivery-truck"><Truck x={65} y={145} /></g><Label x={220} y={125}>COMPRESSED GAS</Label>
-  <g className="delivery-truck alternate"><Truck x={245} y={295} liquid /></g><Label x={385} y={285}>LIQUID · ≈ −253°C</Label>
-  <Label x={125} y={350}>PIPELINE</Label><Pipe d="M40 100V375H195V465H300V480" color={hydrogen} dashed />
-  <FlowGuide d="M300 65V100H40V375H195V465H300V480" />
-</Base>; }
-export function Applications() { return <Base viewBox="25 70 550 420" name="Hydrogen powers a fuel-cell bus, supports industrial production and stationary electricity, while a fuel cell releases water and heat">
-  <Pipe d="M300 70V285H150V240M300 285H430V235M300 285V330" color={hydrogen} dashed />
-  <FlowGuide d="M300 70V330" />
-  <path d="M50 105H140V240H50Z M140 150L190 120V240H140Z M190 160L245 130V240H190Z" fill="#5f91ac" stroke="#2d5e77" strokeWidth="2" /><path d="M65 85H85V105H65Z" fill="#2b5e78" /><g fill="#183f56">{[70,105,160,207].map(x=><rect key={x} x={x} y="183" width="17" height="24" />)}</g><Label x={150} y={270}>INDUSTRY</Label>
-  <g transform="translate(365 135)"><rect width="125" height="100" rx="12" fill="#d7eaf4" stroke={ink} strokeWidth="2" /><path d="M69 15L40 54H63L53 86L86 43H64Z" fill="#60a52a" /><Label x={62} y={135}>STATIONARY POWER</Label></g>
-  <g className="fuel-cell-bus" transform="translate(95 300)"><rect width="355" height="105" rx="22" fill="#9bd54e" stroke={ink} strokeWidth="3" /><rect x="15" y="15" width="270" height="40" rx="9" fill="#163f55" /><path d="M80 15V55M145 15V55M210 15V55" stroke="#9bd54e" strokeWidth="5" /><rect x="298" y="20" width="35" height="70" rx="4" fill="#56a26f" stroke={ink} strokeWidth="2" /><Label x={150} y={85}>H₂ ELECTRIC</Label>{[65,270].map(x=><g key={x}><circle cx={x} cy="105" r="23" fill={ink} /><circle cx={x} cy="105" r="10" fill="#e8f1f4" /></g>)}</g>
-  <g className="water-return" fill={water}><path d="M495 350q-20 30 0 30q20 0 0-30M535 370q-14 22 0 22q14 0 0-22" /></g><Label x={510} y={425}>WATER</Label><Label x={300} y={475}>ELECTRICITY + WATER + HEAT</Label>
-</Base>; }
-export const sceneIllustrations = [Lake, Purification, Renewables, Electrolyzer, OxygenRecovery, Conditioning, Storage, Delivery, Applications];
+export function Intake() {
+  const hatch = [240, 255, 270, 285];
+  return <Frame name="Schematic: water is drawn from a source through a screened intake, pumped, strained and metered on its way to treatment">
+    <path className="dg-ground" d="M20 200H70L110 300H250L290 200H620" />
+    <g className="dg-thin">{[30, 50, ...Array.from({ length: 16 }, (_, i) => 310 + i * 20)].map(x => <path key={x} d={`M${x} 200l-10 12`} />)}</g>
+    <path className="dg-water-surface" d="M80 225H280" />
+    <g className="dg-water-hatch">{hatch.map(y => <path key={y} d={`M${70 + (y - 200) * .4 + 6} ${y}H${290 - (y - 200) * .4 - 6}`} />)}</g>
+    <Line d="M226 262V130H338" s="raw" />
+    <Line d="M382 130H440" s="raw" />
+    <Line d="M480 130H612" s="raw" /><Arrow x={620} y={130} s="raw" />
+    <rect className="dg-eq" x="215" y="262" width="22" height="22" />
+    <path className="dg-thin" d="M221 264V282M226 264V282M231 264V282" />
+    <circle className="dg-eq" cx="360" cy="130" r="22" />
+    <path className="dg-thin" d="M350 118L374 130L350 142Z" />
+    <rect className="dg-eq" x="440" y="116" width="40" height="28" />
+    <path className="dg-thin" d="M446 140L458 120M456 140L468 120M466 140L476 124" />
+    <Instrument x={540} y={76} code="FT" toY={130} />
+    <Note x={600} y={114} anchor="end">TO TREATMENT</Note>
+    <Tag x={360} y={172} code="P-101" name="INTAKE PUMP" />
+    <Tag x={460} y={172} code="S-101" name="STRAINER" />
+    <Tag x={180} y={330} name="SOURCE WATER" />
+    <Note x={180} y={346}>SCREENED INTAKE</Note>
+  </Frame>;
+}
 
-export function Landscape() { return <svg className="process-landscape" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-  <defs><linearGradient id="land-sky" x2="0" y2="1"><stop stopColor="#e7eedc" /><stop offset="1" stopColor="#d0e2cf" /></linearGradient></defs>
-  <rect width="1600" height="900" fill="url(#land-sky)" /><circle cx="1250" cy="175" r="66" fill="#f1e9bc" opacity=".7" />
-  <g className="forest-world"><path d="M0 460Q250 230 530 400T1050 400T1600 420V900H0" fill="#a9c29b" opacity=".4" /><path d="M0 640Q400 350 750 620T1600 530V900H0" fill="#93b693" opacity=".5" />{Array.from({length:19},(_,i)=><Tree x={i*95-30} y={800+(i%3)*25} size={1.1+(i%4)*.35} key={i} />)}<path d="M0 840Q400 780 800 850T1600 810V900H0" fill="#7ea5ab" opacity=".5" /></g>
-  <g className="urban-world"><path d="M0 700H90V520H175V700H230V400H335V700H400V555H525V700H615V470H740V700H900V540H980V700H1070V410H1190V700H1300V505H1400V700H1490V445H1600V900H0Z" fill="#9db3af" opacity=".6" />{Array.from({length:22},(_,i)=><rect key={i} x={55+i*74} y={625-(i%3)*25} width="18" height="35" fill="#d6e3d5" opacity=".8" />)}<path d="M0 810H1600V900H0" fill="#8da69c" opacity=".5" /><path d="M0 850H1600" stroke="#edf2dc" strokeDasharray="50 35" strokeWidth="4" /></g>
-</svg>; }
+export function Treatment() {
+  return <Frame name="Schematic: water passes through a media filter, reverse osmosis and deionization, with conductivity monitored at the outlet">
+    <Line d="M20 210H70" s="raw" />
+    <Line d="M130 210H210" s="raw" />
+    <Line d="M360 210H430" s="water" />
+    <Line d="M520 210H612" s="water" /><Arrow x={620} y={210} s="water" />
+    <Line d="M345 235V300H400" s="raw" /><Arrow x={408} y={300} s="raw" />
+    <rect className="dg-eq" x="70" y="120" width="60" height="180" rx="30" />
+    <g className="dg-media">{Array.from({ length: 24 }, (_, i) => <circle key={i} cx={82 + (i % 6) * 7.5 + (Math.floor(i / 6) % 2) * 3} cy={232 + Math.floor(i / 6) * 13} r="2.2" />)}</g>
+    <path className="dg-thin" d="M76 222H124" />
+    <rect className="dg-eq" x="210" y="185" width="150" height="50" rx="25" />
+    <path className="dg-thin dg-dashed" d="M226 210H344" />
+    <rect className="dg-eq" x="430" y="140" width="90" height="140" rx="6" />
+    <g className="dg-thin">{[446, 458, 470, 482, 494, 506].map((x, i) => <path key={x} d={`M${x} 156V264`} strokeDasharray={i % 2 ? '4 4' : undefined} />)}</g>
+    <Instrument x={565} y={130} code="CE" toY={210} />
+    <Note x={545} y={134} anchor="end">&lt; 1 µS/cm</Note>
+    <Note x={600} y={195} anchor="end">TO ELECTROLYZER</Note>
+    <Note x={416} y={304} anchor="start">CONCENTRATE</Note>
+    <Tag x={100} y={326} code="F-201" name="MEDIA FILTER" />
+    <Tag x={270} y={262} code="RO-201" name="REVERSE OSMOSIS" />
+    <Tag x={475} y={306} code="DI-201" name="DEIONIZATION" />
+  </Frame>;
+}
+
+export function Power() {
+  return <Frame name="Single-line diagram: hydro, wind and solar generation feed a common AC bus, then a transformer and rectifier supply DC power to the electrolyzer">
+    <Line d="M96 110H250" s="power" />
+    <Line d="M120 210H250" s="power" />
+    <Line d="M154 310H250" s="power" />
+    <Line d="M250 210H300" s="power" />
+    <Line d="M356 210H380" s="power" />
+    <Line d="M470 210H612" s="power" /><Arrow x={620} y={210} s="power" />
+    <g className="dg-wind">
+      <path className="dg-eq" d="M87 135L90 72L93 135Z" />
+      <g className="dg-rotor">{[0, 120, 240].map(angle => <path key={angle} className="dg-eq" transform={`rotate(${angle} 90 70)`} d="M90 70L86 44Q90 34 94 44Z" />)}</g>
+      <circle className="dg-hub" cx="90" cy="70" r="4" />
+    </g>
+    <path className="dg-eq" d="M60 230L75 190H125L110 230Z" />
+    <path className="dg-thin" d="M67 213H118M85 190L77 230M100 190L93 230" />
+    <path className="dg-thin" d="M92 230V245" />
+    <g className="dg-water-hatch"><path d="M28 296H58M28 306H55M28 316H52" /></g>
+    <path className="dg-eq" d="M60 330L75 285H95L110 330Z" />
+    <circle className="dg-eq" cx="140" cy="310" r="14" />
+    <text x="140" y="314" textAnchor="middle" className="dg-instrument">G</text>
+    <path className="dg-bus" d="M250 90V330" />
+    <circle className="dg-eq" cx="318" cy="210" r="18" /><circle className="dg-eq dg-open" cx="338" cy="210" r="18" />
+    <rect className="dg-eq" x="380" y="180" width="90" height="60" />
+    <path className="dg-thin" d="M380 240L470 180" />
+    <text x="398" y="200" textAnchor="middle" className="dg-instrument">~</text>
+    <text x="452" y="230" textAnchor="middle" className="dg-instrument">=</text>
+    <Note x={275} y={84} anchor="start">AC BUS</Note>
+    <Note x={600} y={195} anchor="end">DC TO STACK</Note>
+    <Tag x={90} y={160} name="WIND" />
+    <Tag x={92} y={264} name="SOLAR PV" />
+    <Tag x={95} y={354} name="HYDRO" />
+    <Tag x={328} y={252} code="T-301" name="TRANSFORMER" />
+    <Tag x={425} y={266} code="R-301" name="RECTIFIER" />
+    <Note x={612} y={380} anchor="end">≈ 50–55 kWh PER kg H₂</Note>
+  </Frame>;
+}
+
+export function Electrolysis() {
+  const o2 = [[200, 300, 0], [222, 260, .6], [206, 220, 1.2], [230, 190, 1.8]];
+  const h2 = [[404, 296, .3], [430, 262, .9], [414, 222, 1.5], [440, 188, 2.1]];
+  return <Frame name="Cross-section of a PEM electrolysis cell: water enters the anode, protons cross the membrane, oxygen leaves the anode side and hydrogen leaves the cathode side">
+    <rect className="dg-tint-water" x="181" y="111" width="133" height="208" />
+    <rect className="dg-tint-h2" x="326" y="111" width="133" height="208" />
+    <Line d="M20 280H180" s="water" /><Arrow x={180} y={280} s="water" />
+    <Line d="M210 110V80H28" s="o2" /><Arrow x={20} y={80} s="o2" dir="l" />
+    <Line d="M430 110V80H612" s="h2" /><Arrow x={620} y={80} s="h2" />
+    <path className="dg-wire" d="M296 55H255V130M344 55H385V130" />
+    <rect className="dg-eq" x="296" y="40" width="48" height="30" />
+    <text x="320" y="60" textAnchor="middle" className="dg-instrument">DC</text>
+    <text x="270" y="48" textAnchor="middle" className="dg-sign">+</text>
+    <text x="370" y="48" textAnchor="middle" className="dg-sign">−</text>
+    <rect className="dg-eq" x="180" y="110" width="280" height="210" fill="none" />
+    <rect className="dg-membrane" x="314" y="110" width="12" height="210" />
+    <rect className="dg-electrode" x="250" y="130" width="10" height="170" />
+    <rect className="dg-electrode" x="380" y="130" width="10" height="170" />
+    {[190, 230, 270].map(y => <g key={y}>
+      <path className="dg-ion" d={`M266 ${y}H368`} />
+      <path className="dg-ion-head" d={`M366 ${y - 4}L374 ${y}L366 ${y + 4}`} />
+      <text x="290" y={y - 6} textAnchor="middle" className="dg-note">H⁺</text>
+    </g>)}
+    {o2.map(([x, y, delay]) => <circle key={`o${x}${y}`} className="dg-bubble dg-bubble-o2" cx={x} cy={y} r="4" style={{ animationDelay: `${delay}s` }} />)}
+    {h2.map(([x, y, delay]) => <circle key={`h${x}${y}`} className="dg-bubble dg-bubble-h2" cx={x} cy={y} r="5" style={{ animationDelay: `${delay}s` }} />)}
+    <path className="dg-thin" d="M320 300V372" />
+    <Note x={28} y={72} anchor="start">O₂ OUT</Note>
+    <Note x={612} y={72} anchor="end">H₂ OUT</Note>
+    <Note x={28} y={268} anchor="start">H₂O IN</Note>
+    <Tag x={247} y={342} name="ANODE (+)" />
+    <Tag x={393} y={342} name="CATHODE (−)" />
+    <Tag x={320} y={388} name="MEMBRANE" />
+    <Note x={300} y={410} anchor="end">2H₂O → O₂ + 4H⁺ + 4e⁻</Note>
+    <Note x={340} y={410} anchor="start">4H⁺ + 4e⁻ → 2H₂</Note>
+  </Frame>;
+}
+
+export function OxygenRecovery() {
+  return <Frame name="Schematic: oxygen from the stack passes a knock-out drum and dryer into storage cylinders for water treatment, glass and metals markets, or is vented where there is no offtake">
+    <Line d="M20 120H90" s="o2" />
+    <Line d="M140 120H210" s="o2" />
+    <Line d="M260 120H470V200H482" s="o2" /><Arrow x={490} y={200} s="o2" />
+    {[340, 390, 440].map(x => <Line key={x} d={`M${x} 120V150`} s="o2" />)}
+    <Line d="M290 120V44" s="o2" optional /><Arrow x={290} y={40} s="o2" dir="u" />
+    <Line d="M115 220V250H170" s="water" /><Arrow x={178} y={250} s="water" />
+    <rect className="dg-eq" x="90" y="80" width="50" height="140" rx="25" />
+    <path className="dg-thin" d="M96 98H134M96 104H134M96 110H134" />
+    <rect className="dg-eq" x="210" y="90" width="50" height="110" rx="8" />
+    <g className="dg-media">{Array.from({ length: 18 }, (_, i) => <circle key={i} cx={220 + (i % 3) * 15} cy={108 + Math.floor(i / 3) * 15} r="2.2" />)}</g>
+    {[340, 390, 440].map(x => <rect key={x} className="dg-eq" x={x - 15} y="150" width="30" height="120" rx="15" />)}
+    <rect className="dg-eq" x="490" y="160" width="130" height="110" />
+    <text x="502" y="184" className="dg-code">O₂ MARKETS</text>
+    <path className="dg-thin" d="M502 194H608" />
+    {['WATER TREATMENT', 'GLASS', 'METALS'].map((m, i) => <text key={m} x="502" y={214 + i * 18} className="dg-note">{m}</text>)}
+    <Note x={28} y={104} anchor="start">O₂ FROM STACK</Note>
+    <Note x={302} y={44} anchor="start">VENT · IF NO OFFTAKE</Note>
+    <Note x={186} y={254} anchor="start">CONDENSATE</Note>
+    <Tag x={115} y={284} code="V-501" name="KO DRUM" />
+    <Tag x={235} y={226} code="D-501" name="DRYER" />
+    <Tag x={390} y={296} name="O₂ STORAGE" />
+  </Frame>;
+}
+
+export function Conditioning() {
+  return <Frame name="Schematic: hydrogen passes a gas-liquid separator, a catalytic deoxo reactor and twin dryers, with purity confirmed by an online analyzer">
+    <Line d="M20 210H70" s="h2" />
+    <Line d="M120 210H190" s="h2" />
+    <Line d="M250 210H310" s="h2" />
+    <Line d="M330 120V90H450V210H612" s="h2" /><Arrow x={620} y={210} s="h2" />
+    <Line d="M95 300V330H62" s="water" /><Arrow x={54} y={330} s="water" dir="l" />
+    <rect className="dg-eq" x="70" y="110" width="50" height="190" rx="25" />
+    <path className="dg-thin" d="M76 132H114M76 138H114M76 144H114" />
+    <rect className="dg-eq" x="190" y="140" width="60" height="140" rx="10" />
+    <g className="dg-thin">{[0, 1, 2, 3, 4].map(i => <path key={i} d={`M196 ${170 + i * 18}l48 -12M196 ${158 + i * 18}l48 12`} />)}</g>
+    <rect className="dg-eq" x="310" y="120" width="40" height="180" rx="20" />
+    <rect className="dg-eq dg-standby" x="370" y="120" width="40" height="180" rx="20" />
+    <path className="dg-thin dg-dashed" d="M350 260H370" />
+    <text x="330" y="156" textAnchor="middle" className="dg-instrument">A</text>
+    <text x="390" y="156" textAnchor="middle" className="dg-instrument">B</text>
+    <Instrument x={520} y={140} code="AT" toY={210} />
+    <Note x={545} y={144} anchor="start">≥ 99.97 %</Note>
+    <Note x={28} y={195} anchor="start">H₂ FROM STACK</Note>
+    <Note x={46} y={334} anchor="end">WATER</Note>
+    <Note x={360} y={276} >REGEN</Note>
+    <Note x={600} y={195} anchor="end">TO COMPRESSION</Note>
+    <Tag x={95} y={362} code="V-601" name="SEPARATOR" />
+    <Tag x={220} y={362} code="R-601" name="DEOXO" />
+    <Tag x={360} y={362} code="T-601 A/B" name="TSA DRYERS" />
+  </Frame>;
+}
+
+export function Storage() {
+  const tubes = [213, 249, 285, 321];
+  return <Frame name="Schematic: a compressor and intercooler raise hydrogen pressure into a bank of storage tubes, monitored by a pressure transmitter, before distribution">
+    <Line d="M20 150H90" s="h2" />
+    <Line d="M150 150H200" s="h2" />
+    <Line d="M240 150H300V321" s="h2" />
+    {tubes.map(y => <Line key={y} d={`M300 ${y}H330`} s="h2" />)}
+    {tubes.map(y => <Line key={`o${y}`} d={`M560 ${y}H580`} s="h2" />)}
+    <Line d="M580 321V150H612" s="h2" /><Arrow x={620} y={150} s="h2" />
+    <path className="dg-thin dg-cool" d="M220 130V110M220 170V190" />
+    <circle className="dg-eq" cx="120" cy="150" r="30" />
+    <path className="dg-thin" d="M98 130L142 140V160L98 170Z" />
+    <circle className="dg-eq" cx="220" cy="150" r="20" />
+    <path className="dg-thin dg-cool" d="M205 150l3-8l5 16l5-16l5 16l5-16l3 8" />
+    {tubes.map(y => <rect key={y} className="dg-eq" x="330" y={y - 13} width="230" height="26" rx="13" />)}
+    <Instrument x={540} y={110} code="PT" toY={150} />
+    <Note x={20} y={135} anchor="start">H₂ IN</Note>
+    <Note x={232} y={106} anchor="start">CW</Note>
+    <Note x={612} y={135} anchor="end">TO DISTRIBUTION</Note>
+    <Tag x={120} y={205} code="C-701" name="COMPRESSOR" />
+    <Note x={120} y={238}>MULTI-STAGE</Note>
+    <Tag x={220} y={226} code="E-701" name="INTERCOOLER" />
+    <Tag x={445} y={356} code="TK-701" name="BUFFER STORAGE" />
+  </Frame>;
+}
+
+function Wheels({ xs, y }: { xs: number[]; y: number }) {
+  return <>{xs.map(x => <circle key={x} className="dg-eq" cx={x} cy={y} r="9" />)}</>;
+}
+export function Distribution() {
+  return <Frame name="Schematic: hydrogen leaves storage by three routes, a compressed-gas tube trailer, a pipeline with an isolation valve, or liquefaction to a cryogenic tanker at about minus 253 degrees Celsius">
+    <Line d="M90 210H120V86H232" s="h2" /><Arrow x={240} y={86} s="h2" />
+    <Line d="M90 210H290M310 210H612" s="h2" /><Arrow x={620} y={210} s="h2" />
+    <Line d="M90 210H120V340H180" s="h2" />
+    <Line d="M270 340H297" s="h2" /><Arrow x={305} y={340} s="h2" />
+    <rect className="dg-eq" x="30" y="170" width="60" height="80" rx="8" />
+    {[64, 78, 92].map(y => <rect key={y} className="dg-eq" x="250" y={y} width="190" height="10" rx="5" />)}
+    <path className="dg-thin" d="M245 108H475" />
+    <rect className="dg-eq" x="475" y="72" width="50" height="36" rx="4" />
+    <path className="dg-thin" d="M500 78H519V92H500Z" />
+    <Wheels xs={[280, 305, 410, 500]} y={116} />
+    <path className="dg-eq" d="M290 200L310 220V200L290 220Z" />
+    <g className="dg-thin">{[180, 380, 440, 500, 560].map(x => <path key={x} d={`M${x} 222V230`} />)}</g>
+    <rect className="dg-eq" x="180" y="315" width="90" height="50" />
+    <path className="dg-thin" d="M225 326V354M213 333L237 347M213 347L237 333" />
+    <rect className="dg-eq" x="305" y="318" width="170" height="40" rx="20" />
+    <rect className="dg-eq dg-open" x="312" y="324" width="156" height="28" rx="14" />
+    <rect className="dg-eq" x="480" y="322" width="48" height="36" rx="4" />
+    <Wheels xs={[335, 360, 445, 505]} y={366} />
+    <Tag x={60} y={272} name="H₂ STORAGE" />
+    <Note x={250} y={48} anchor="start">TUBE TRAILER · COMPRESSED GAS</Note>
+    <Note x={330} y={194} anchor="start">PIPELINE</Note>
+    <Note x={300} y={244}>VALVE</Note>
+    <Note x={600} y={194} anchor="end">TO CUSTOMER</Note>
+    <Note x={180} y={300} anchor="start">LIQUID TANKER · ≈ −253 °C</Note>
+    <Tag x={225} y={392} name="LIQUEFIER" />
+  </Frame>;
+}
+
+export function EndUse() {
+  return <Frame name="Schematic: hydrogen supply branches to industrial feedstock, fuel-cell vehicles and stationary fuel-cell power, where hydrogen and oxygen produce electricity, water and heat">
+    <Line d="M20 210H120V90H220" s="h2" /><Arrow x={228} y={90} s="h2" />
+    <Line d="M20 210H220" s="h2" /><Arrow x={228} y={210} s="h2" />
+    <Line d="M20 210H120V330H220" s="h2" /><Arrow x={228} y={330} s="h2" />
+    <path className="dg-eq" d="M232 120V80L264 62V80L296 62V80L328 62V120Z" />
+    <path className="dg-thin" d="M244 104H256M268 104H280M292 104H304" />
+    <rect className="dg-eq" x="232" y="185" width="110" height="46" rx="8" />
+    <rect className="dg-eq" x="252" y="177" width="50" height="8" rx="3" />
+    <rect className="dg-eq dg-open" x="242" y="193" width="80" height="14" />
+    <Wheels xs={[258, 318]} y={234} />
+    <rect className="dg-eq" x="232" y="300" width="90" height="60" />
+    <g className="dg-thin">{[242, 250, 258, 266, 274, 282].map(x => <path key={x} d={`M${x} 310V350`} />)}</g>
+    <path className="dg-bolt" d="M304 310L294 331H303L298 350L312 326H303Z" />
+    <Note x={20} y={195} anchor="start">H₂ SUPPLY</Note>
+    <Tag x={350} y={86} name="INDUSTRIAL FEEDSTOCK" anchor="start" />
+    <Note x={350} y={104} anchor="start">AMMONIA · REFINING · STEEL</Note>
+    <Tag x={362} y={206} name="FUEL-CELL VEHICLES" anchor="start" />
+    <Note x={362} y={224} anchor="start">BUSES · TRUCKS · MATERIAL HANDLING</Note>
+    <Tag x={342} y={326} name="STATIONARY POWER" anchor="start" />
+    <Note x={342} y={344} anchor="start">BACKUP · OFF-GRID · PEAK SUPPORT</Note>
+    <Note x={320} y={404}>2H₂ + O₂ → ELECTRICITY + 2H₂O + HEAT</Note>
+  </Frame>;
+}
+
+export const sceneIllustrations = [Intake, Treatment, Power, Electrolysis, OxygenRecovery, Conditioning, Storage, Distribution, EndUse];
