@@ -295,4 +295,26 @@ export function EndUse() {
   </Frame>;
 }
 
+export function Overview() {
+  return <svg className="dg dg-overview" viewBox="0 0 560 290" role="img" aria-label="Overview: renewable power and water enter an electrolyzer, which produces hydrogen and oxygen">
+    <Line d="M20 60H300V102" s="power" /><Arrow x={300} y={108} s="power" dir="d" />
+    <Line d="M20 200H212" s="water" /><Arrow x={220} y={200} s="water" />
+    <Line d="M380 140H532" s="h2" /><Arrow x={540} y={140} s="h2" />
+    <Line d="M380 210H440V250H532" s="o2" /><Arrow x={540} y={250} s="o2" />
+    <rect className="dg-tint-water" x="221" y="111" width="75" height="128" />
+    <rect className="dg-tint-h2" x="304" y="111" width="75" height="128" />
+    <rect className="dg-eq" x="220" y="110" width="160" height="130" fill="none" />
+    <rect className="dg-membrane" x="296" y="110" width="8" height="130" />
+    <rect className="dg-electrode" x="258" y="128" width="8" height="94" />
+    <rect className="dg-electrode" x="334" y="128" width="8" height="94" />
+    {[[238, 214, 0], [246, 176, .9], [234, 150, 1.7]].map(([x, y, d]) => <circle key={`o${y}`} className="dg-bubble dg-bubble-o2" cx={x} cy={y} r="3.5" style={{ animationDelay: `${d}s` }} />)}
+    {[[358, 210, .4], [364, 172, 1.2], [352, 146, 2]].map(([x, y, d]) => <circle key={`h${y}`} className="dg-bubble dg-bubble-h2" cx={x} cy={y} r="4.5" style={{ animationDelay: `${d}s` }} />)}
+    <Tag x={20} y={46} name="RENEWABLE POWER" anchor="start" />
+    <Tag x={20} y={186} name="WATER" anchor="start" />
+    <Tag x={540} y={126} name="HYDROGEN" anchor="end" />
+    <Tag x={540} y={236} name="OXYGEN" anchor="end" />
+    <Tag x={300} y={268} name="ELECTROLYZER" />
+  </svg>;
+}
+
 export const sceneIllustrations = [Intake, Treatment, Power, Electrolysis, OxygenRecovery, Conditioning, Storage, Distribution, EndUse];

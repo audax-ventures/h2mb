@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { sceneIllustrations } from './illustrations';
+import { Overview, sceneIllustrations } from './illustrations';
 import { processPhases, processSteps } from './steps';
 import './process.css';
 
@@ -40,26 +40,19 @@ export function ProcessJourney() {
   return <div className={`process-page${paused ? ' is-paused' : ''}`} ref={root}>
     <section className="process-hero container" aria-labelledby="process-title">
       <div className="process-hero-top">
-        <div>
+        <div className="process-hero-copy">
           <p className="process-eyebrow">Our process</p>
           <h1 id="process-title">How green hydrogen <em>is made.</em></h1>
-        </div>
-        <div className="process-hero-side">
-          <p>Nine stages turn water and renewable electricity into hydrogen ready for industry, transport and power. This is the pathway behind our work to produce North America’s lowest-cost green hydrogen.</p>
+          <p>Water and renewable power in. Clean hydrogen out.</p>
           <a href="#water-supply" className="process-start">Walk through the process <span aria-hidden="true">↓</span></a>
         </div>
+        <figure className="process-hero-figure is-active"><Overview /></figure>
       </div>
-      <ol className="process-map" aria-label="Process overview">
-        {processPhases.map(phase => <li key={phase.id} className="process-map-phase">
-          <div className="process-map-head"><span>{phase.number}</span>{phase.label}</div>
-          <p>{phase.title}</p>
-          <ol>
-            {phase.steps.map(step => {
-              const index = processSteps.findIndex(s => s.id === step.id);
-              return <li key={step.id}><a href={`#${step.id}`}><span>{pad(index + 1)}</span>{step.label}</a></li>;
-            })}
-          </ol>
-        </li>)}
+      <ol className="process-map" aria-label="Process phases">
+        {processPhases.map(phase => {
+          const first = processSteps.findIndex(s => s.id === phase.steps[0].id);
+          return <li key={phase.id}><a href={`#${phase.steps[0].id}`}><span>{phase.number}</span>{phase.label}<small>Steps {pad(first + 1)}–{pad(first + phase.steps.length)}</small></a></li>;
+        })}
       </ol>
     </section>
 
