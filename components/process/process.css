@@ -183,7 +183,7 @@
 /* Narrow screens: the schematic pins to the top and the steps scroll beneath it. */
 @media (max-width: 960px) {
   .process-page { --panel-top: 76px; }
-  html:has(.process-page) { scroll-padding-top: calc(76px + 92px + (100vw - 40px) * .62); }
+  html:has(.process-page) { scroll-padding-top: calc(76px + 124px + (100vw - 28px) * .66); }
   .process-hero { padding-block: 48px 44px; }
   .process-hero-top { grid-template-columns: 1fr; gap: 26px; }
   .process-hero h1 { font-size: clamp(42px, 10vw, 64px); }

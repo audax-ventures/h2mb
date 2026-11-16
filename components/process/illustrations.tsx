@@ -51,7 +51,7 @@ export function Intake() {
     <path className="dg-thin" d="M350 118L374 130L350 142Z" />
     <rect className="dg-eq" x="440" y="116" width="40" height="28" />
     <path className="dg-thin" d="M446 140L458 120M456 140L468 120M466 140L476 124" />
-    <Instrument x={540} y={76} code="FT" toY={130} />
+    <Instrument x={411} y={76} code="FT" toY={130} />
     <Note x={600} y={114} anchor="end">TO TREATMENT</Note>
     <Tag x={360} y={172} code="P-101" name="INTAKE PUMP" />
     <Tag x={460} y={172} code="S-101" name="STRAINER" />
@@ -65,22 +65,22 @@ export function Treatment() {
     <Line d="M20 210H70" s="raw" />
     <Line d="M130 210H210" s="raw" />
     <Line d="M360 210H430" s="water" />
-    <Line d="M520 210H612" s="water" /><Arrow x={620} y={210} s="water" />
-    <Line d="M345 235V300H400" s="raw" /><Arrow x={408} y={300} s="raw" />
+    <Line d="M510 210H612" s="water" /><Arrow x={620} y={210} s="water" />
+    <Line d="M345 235V350H400" s="raw" /><Arrow x={408} y={350} s="raw" />
     <rect className="dg-eq" x="70" y="120" width="60" height="180" rx="30" />
     <g className="dg-media">{Array.from({ length: 24 }, (_, i) => <circle key={i} cx={82 + (i % 6) * 7.5 + (Math.floor(i / 6) % 2) * 3} cy={232 + Math.floor(i / 6) * 13} r="2.2" />)}</g>
     <path className="dg-thin" d="M76 222H124" />
     <rect className="dg-eq" x="210" y="185" width="150" height="50" rx="25" />
     <path className="dg-thin dg-dashed" d="M226 210H344" />
-    <rect className="dg-eq" x="430" y="140" width="90" height="140" rx="6" />
-    <g className="dg-thin">{[446, 458, 470, 482, 494, 506].map((x, i) => <path key={x} d={`M${x} 156V264`} strokeDasharray={i % 2 ? '4 4' : undefined} />)}</g>
-    <Instrument x={565} y={130} code="CE" toY={210} />
-    <Note x={545} y={134} anchor="end">&lt; 1 µS/cm</Note>
-    <Note x={600} y={195} anchor="end">TO ELECTROLYZER</Note>
-    <Note x={416} y={304} anchor="start">CONCENTRATE</Note>
+    <rect className="dg-eq" x="430" y="140" width="80" height="140" rx="6" />
+    <g className="dg-thin">{[444, 455, 466, 477, 488, 499].map((x, i) => <path key={x} d={`M${x} 156V264`} strokeDasharray={i % 2 ? '4 4' : undefined} />)}</g>
+    <Instrument x={596} y={130} code="CE" toY={210} />
+    <Note x={596} y={104}>&lt; 1 µS/cm</Note>
+    <Note x={612} y={234} anchor="end">TO ELECTROLYZER</Note>
+    <Note x={416} y={354} anchor="start">CONCENTRATE</Note>
     <Tag x={100} y={326} code="F-201" name="MEDIA FILTER" />
     <Tag x={270} y={262} code="RO-201" name="REVERSE OSMOSIS" />
-    <Tag x={475} y={306} code="DI-201" name="DEIONIZATION" />
+    <Tag x={470} y={306} code="DI-201" name="DEIONIZATION" />
   </Frame>;
 }
 
@@ -175,7 +175,7 @@ export function OxygenRecovery() {
     <text x="502" y="184" className="dg-code">O₂ MARKETS</text>
     <path className="dg-thin" d="M502 194H608" />
     {['WATER TREATMENT', 'GLASS', 'METALS'].map((m, i) => <text key={m} x="502" y={214 + i * 18} className="dg-note">{m}</text>)}
-    <Note x={28} y={104} anchor="start">O₂ FROM STACK</Note>
+    <Note x={28} y={104} anchor="start">O₂ IN</Note>
     <Note x={302} y={44} anchor="start">VENT · IF NO OFFTAKE</Note>
     <Note x={186} y={254} anchor="start">CONDENSATE</Note>
     <Tag x={115} y={284} code="V-501" name="KO DRUM" />
@@ -202,9 +202,8 @@ export function Conditioning() {
     <text x="390" y="156" textAnchor="middle" className="dg-instrument">B</text>
     <Instrument x={520} y={140} code="AT" toY={210} />
     <Note x={545} y={144} anchor="start">≥ 99.97 %</Note>
-    <Note x={28} y={195} anchor="start">H₂ FROM STACK</Note>
+    <Note x={28} y={195} anchor="start">H₂ IN</Note>
     <Note x={46} y={334} anchor="end">WATER</Note>
-    <Note x={360} y={276} >REGEN</Note>
     <Note x={600} y={195} anchor="end">TO COMPRESSION</Note>
     <Tag x={95} y={362} code="V-601" name="SEPARATOR" />
     <Tag x={220} y={362} code="R-601" name="DEOXO" />
@@ -227,7 +226,7 @@ export function Storage() {
     <circle className="dg-eq" cx="220" cy="150" r="20" />
     <path className="dg-thin dg-cool" d="M205 150l3-8l5 16l5-16l5 16l5-16l3 8" />
     {tubes.map(y => <rect key={y} className="dg-eq" x="330" y={y - 13} width="230" height="26" rx="13" />)}
-    <Instrument x={540} y={110} code="PT" toY={150} />
+    <Instrument x={272} y={106} code="PT" toY={150} />
     <Note x={20} y={135} anchor="start">H₂ IN</Note>
     <Note x={232} y={106} anchor="start">CW</Note>
     <Note x={612} y={135} anchor="end">TO DISTRIBUTION</Note>
